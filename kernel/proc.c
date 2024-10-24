@@ -17,6 +17,7 @@ struct qentry{
 };
 
 // A fixed size table where the index of a process in proc[] is the same in qtable[]
+// Index of head is stored at 64 and tail at 65
 struct qentry qtable[NPROC+2];
 
 struct cpu cpus[NCPU];
@@ -38,6 +39,23 @@ extern char trampoline[]; // trampoline.S
 // memory model when using p->parent.
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
+
+// initialize all the entries of the qtable
+void 
+init_queue()
+{
+  for(int i = 0; i < NPROC; i++){
+    qtable[i].pass = MAX_UINT64; // indicating an empty entry
+    qtable[i].prev = MAX_UINT64;
+    qtable[i].next = MAX_UINT64;
+  }
+
+  qtable[NPROC].next = NPROC+1;
+  qtable[NPROC].prev = MAX_UINT64; // No previous entry for the head
+  qtable[NPROC+1].prev = NPROC;
+  qtable[NPROC+1].next = MAX_UINT64; // No next entry for the tail
+}
+
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
