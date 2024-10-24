@@ -55,7 +55,7 @@ procinit(void)
       initlock(&p->lock, "proc");
       p->state = UNUSED;
       p->kstack = KSTACK((int) (p - proc));
-      p->runtime = 0; // initialize runtime to 0
+      p->runtime = 0; //TODO ? initialize runtime to 0. Should I do it here or in freeproc()?
   }
 }
 
@@ -171,6 +171,7 @@ freeproc(struct proc *p)
   p->xstate = 0;
   p->state = UNUSED;
   p->stride = 0;
+  p->runtime = 0;
 }
 
 // Create a user page table for a given process, with no user memory,
