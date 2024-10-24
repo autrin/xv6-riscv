@@ -6,6 +6,16 @@
 #include "proc.h"
 #include "defs.h"
 
+#define MAX_UINT64 (-1)
+#define EMPTY MAX_UINT64
+
+// a node of the linked list
+struct qentry{
+  uint64 pass; // used by the stride scheduler to keep the list sorted
+  uint64 prev; // index of previous qentry in list
+  uint64 next; // index of next qentry in list
+};
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
