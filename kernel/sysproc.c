@@ -100,4 +100,3 @@ sys_stride(void)
   argint(0, &n);
   return stride(n);
 }
-
