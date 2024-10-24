@@ -91,3 +91,13 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// Set the stride value
+uint64
+sys_stride(void)
+{
+  int n;
+  argint(0, &n);
+  return stride(n);
+}
+
