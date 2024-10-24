@@ -16,6 +16,9 @@ struct qentry{
   uint64 next; // index of next qentry in list
 };
 
+// A fixed size table where the index of a process in proc[] is the same in qtable[]
+struct qentry qtable[NPROC+2];
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
