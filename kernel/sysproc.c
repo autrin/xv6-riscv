@@ -100,3 +100,10 @@ sys_stride(void)
   argint(0, &n);
   return stride(n);
 }
+
+// Get the runtime of the process
+uint64
+sys_getruntime(void)
+{
+  myproc()->runtime; //TODO do I need to add stride value here?
+}
