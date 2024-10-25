@@ -15,21 +15,13 @@ fork_stride_test(void)
     
     printf("fork_stride_test\n");
 
+    // first child process
     pid1 = fork();
     if(pid1 == 0){
-        // stride() // pushing code to pull it on another machine
+        stride(getpid(), 4); // child 1 with stride 4
+        for(i = 0; i < N; i++){} // cpu burst
+        runtime1 = getruntime(pid1);
+        printf("Child 1 finished with runtime: %d", runtime1);
     }
-    pid2 = fork();
-    stride(pid1, 4);
-    stride(pid2, 12);
-    for(i = 0; i < N; i++){
-        printf("i is: %d/n", i);
-    }
-
-    printf("The runtime of proccess %d is %d", pid1, getruntime(pid1));
-    printf("The runtime of proccess %d is %d", pid2, getruntime(pid2));
-    
-    printf("Exiting the processes %d and %d", pid1, pid2);
-    exit(pid1);
-    exit(pid2);
+    // second child process
 }
