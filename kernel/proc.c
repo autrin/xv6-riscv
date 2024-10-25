@@ -56,6 +56,29 @@ init_queue()
   qtable[NPROC+1].next = MAX_UINT64; // No next entry for the tail
 }
 
+// Enqueue a process in qtable
+void 
+enqueue(int pid, uint64 pass) {
+  int current = qtable[NPROC].next;  // Start at the head
+  int previous = NPROC;  // Track the previous index
+
+  // Traverse the queue to find the correct spot based on pass value
+  while (current != NPROC+1 && qtable[current].pass < pass) {
+    previous = current;
+    current = qtable[current].next;
+  }
+
+  // Insert the new entry between previous and current
+  qtable[pid].pass = pass;
+  qtable[pid].prev = previous;
+  qtable[pid].next = current;
+
+  qtable[previous].next = pid;
+  if (current != NPROC+1) {  // If not at the tail
+    qtable[current].prev = pid;
+  }
+}
+
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
