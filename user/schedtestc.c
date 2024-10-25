@@ -1,4 +1,5 @@
 #include "user/user.h"
+#include "kernel/types.h"
 
 #define N  100
 /*
