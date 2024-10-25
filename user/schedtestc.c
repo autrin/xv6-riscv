@@ -33,4 +33,11 @@ fork_stride_test(void)
         printf("Child 2 finished with runtime: %d", runtime2);
         exit(0);
     }
+
+    if(pid1 > 0 && pid2 > 0){ // ensures that we are in the parent process to avoid 
+                              // unnecessary waiting calls by the child processes
+        wait(0); // wait for child 1
+        wait(0); // wait for child 2
+        printf("fork_stride_test() completed\n");
+    }
 }
