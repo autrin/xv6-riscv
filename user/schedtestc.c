@@ -11,10 +11,14 @@ void
 fork_stride_test(void)
 {
     int pid1, pid2, i;
-    struct proc *p;
+    int runtime1, runtime2;
+    
     printf("fork_stride_test\n");
 
     pid1 = fork();
+    if(pid1 == 0){
+        // stride() // pushing code to pull it on another machine
+    }
     pid2 = fork();
     stride(pid1, 4);
     stride(pid2, 12);
