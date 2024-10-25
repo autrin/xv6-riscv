@@ -99,6 +99,22 @@ int dequeue(){
   return pid;
 }
 
+uint64 
+stride(int pid, int stride_value)
+{
+  struct proc *p;
+  // Find the process in proc[] by pid
+  for(p = proc; p < &proc[NPROC]; p++){
+    if(p->pid == pid){
+      acquire(&p->lock); // lock the process while modifying it
+      p->stride = stride_value;
+      release(&p->lock);
+      return 0; // success
+    }
+  }
+  printf("Process with pid %d not found in stride()\n", pid);
+  return -1;
+}
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
