@@ -22,6 +22,15 @@ fork_stride_test(void)
         for(i = 0; i < N; i++){} // cpu burst
         runtime1 = getruntime(pid1);
         printf("Child 1 finished with runtime: %d", runtime1);
+        exit(0);
     }
     // second child process
+    pid2 = fork();
+    if(pid2 == 0){
+        stride(getpid(), 12); // child 2 with stride 12
+        for(i = 0; i < N; i++){}
+        runtime2 = getruntime(pid2);
+        printf("Child 2 finished with runtime: %d", runtime2);
+        exit(0);
+    }
 }
