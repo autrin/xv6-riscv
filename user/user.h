@@ -23,7 +23,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int stride(int pid, int stride);
-int getruntime(int pid);
+int getruntime();
 
 // ulib.c
 int stat(const char*, struct stat*);
