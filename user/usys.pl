@@ -36,5 +36,5 @@ entry("getpid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
-entry("stride")
-entry("getruntime")
+entry("stride");
+entry("getruntime");
