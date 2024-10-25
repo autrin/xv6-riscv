@@ -42,3 +42,8 @@ fork_stride_test(void)
         printf("fork_stride_test() completed\n");
     }
 }
+
+int main(void) {
+    fork_stride_test();
+    exit(0);
+}
