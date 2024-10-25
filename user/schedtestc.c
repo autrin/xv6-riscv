@@ -13,7 +13,7 @@ void
 fork_stride_test(void)
 {
     int pid1, pid2, i;
-    int runtime1, runtime2;
+    uint runtime1, runtime2;
     
     printf("fork_stride_test\n");
 
