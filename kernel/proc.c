@@ -40,6 +40,14 @@ extern char trampoline[]; // trampoline.S
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
 
+// void 
+// scheduler_rr(){
+// TODO
+// }
+
+// TODO
+// scheduler_stride()
+
 // initialize all the entries of the qtable
 void 
 init_queue()
