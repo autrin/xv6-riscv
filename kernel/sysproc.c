@@ -105,6 +105,6 @@ sys_stride(void)
 uint64
 sys_getruntime(void)
 {
-  return myproc()->runtime; 
+  return myproc()->runtime; // Returns only runtime, not stride
 }
 
