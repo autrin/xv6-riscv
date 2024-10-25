@@ -114,15 +114,6 @@ $U/_forktest: $U/forktest.o $(ULIB)
 	$(OBJDUMP) -S $U/_forktest > $U/forktest.asm
 
 
-
-$U/_schedtestc: $U/_schedtestc.o $(ULIB)
-	# schedtestc has less library code linked in - needs to be small
-	# in order to be able to max out the proc table.
-	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $U/_schedtestc $U/schedtestc.o $U/ulib.o $U/usys.o
-	$(OBJDUMP) -S $U/_schedtestc > $U/schedtestc.asm
-
-
-
 mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 	gcc -Werror -Wall -I. -o mkfs/mkfs mkfs/mkfs.c
 
