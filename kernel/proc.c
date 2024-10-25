@@ -79,7 +79,25 @@ enqueue(int pid, uint64 pass) {
   }
 }
 
+// Dequeue a process from qtable
+int dequeue(){
+  int pid = qtable[NPROC].next; // get the entry that's right after the head
+  if(pid == NPROC+1){ // Queue is empty
+    return -1;
+  }
+  // Update the head pointer
+  qtable[NPROC].next = qtable[pid].next; // head now points to the next entry after the head's next entry (skipped the first entry after head)
+  if(qtable[pid].next != NPROC+1){ // if the next entry after the head's next entry is not the tail
+    qtable[qtable[pid].next].prev = NPROC; // make the head's next's prev point to the head
+  }
 
+  // Reset the dequeued process entry. This is the smallest pass value
+  qtable[pid].pass = MAX_UINT64;
+  qtable[pid].next = MAX_UINT64;
+  qtable[pid].prev = MAX_UINT64;
+
+  return pid;
+}
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
