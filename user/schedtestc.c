@@ -2,7 +2,7 @@
 #include "user/user.h"
 #include "kernel/syscall.h"
 
-#define N  100
+#define N  1000000000
 /*
 Use fork to create two new child processes and set their stride values to 4 and 12. Both processes
 then enter long CPU-bursts that lasts several ticks, for example, spinning in a long loop.
