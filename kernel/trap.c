@@ -79,9 +79,9 @@ usertrap(void)
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2){
     yield();
-    printf("The runtime before increamenting: %d", p->runtime);
+    printf("The runtime before increamenting: %d\n", p->runtime);
     p->runtime++; // increment runtime of the process by 1
-    printf("The runtime after increamenting: %d", p->runtime);
+    printf("The runtime after increamenting: %d\n", p->runtime);
   }
   
   usertrapret();
