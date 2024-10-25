@@ -105,8 +105,6 @@ sys_stride(void)
 uint64
 sys_getruntime(void)
 {
-  return myproc()->runtime; //TODO do I need to add stride value here?
+  return myproc()->runtime; 
 }
 
-uint64
-stride(int pid, int stride_value);

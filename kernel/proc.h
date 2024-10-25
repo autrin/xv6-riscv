@@ -108,3 +108,6 @@ struct proc {
   uint runtime;                 // Process runtime is the time spent on the CPU
   int stride;                  // Stride value for the process
 };
+
+uint64
+stride(int pid, int stride_value);
