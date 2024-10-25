@@ -1,5 +1,6 @@
 #include "kernel/types.h"
 #include "user/user.h"
+#include "kernel/syscall.h"
 
 #define N  100
 /*
