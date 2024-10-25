@@ -97,8 +97,8 @@ uint64
 sys_stride(void)
 {
   int n;
-  argint(0, &n);
-  return stride(n);
+  argint(0, &n); // get the stride value from the user space
+  return stride(myproc()->pid, n); // set the stride value for the current process
 }
 
 // Get the runtime of the process
