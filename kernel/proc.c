@@ -108,20 +108,21 @@ int dequeue(){
 }
 
 uint64
-stride(int pid, int stride_value) //! not using the qtable here
+stride(int pid, int stride_value)
 {
   struct proc *p;
-  // Find the process in proc[] by pid
-  for(p = proc; p < &proc[NPROC]; p++){
-    if(p->pid == pid){
-      // acquire(&p->lock); // lock the process while modifying it
+  for (p = proc; p < &proc[NPROC]; p++)
+  {
+    if (p->pid == pid)
+    {
+      acquire(&p->lock);        // Lock the process before modifying
       p->stride = stride_value;
-      // release(&p->lock);
-      return 0; // success
+      release(&p->lock);
+      return 0;
     }
   }
   printf("Process with pid %d not found in stride()\n", pid);
-  return -1;
+  return -1; // Return -1 if process is not found
 }
 
 // Allocate a page for each process's kernel stack.
