@@ -114,9 +114,9 @@ stride(int pid, int stride_value) //! not using the qtable here
   // Find the process in proc[] by pid
   for(p = proc; p < &proc[NPROC]; p++){
     if(p->pid == pid){
-      acquire(&p->lock); // lock the process while modifying it
+      // acquire(&p->lock); // lock the process while modifying it
       p->stride = stride_value;
-      release(&p->lock);
+      // release(&p->lock);
       return 0; // success
     }
   }
