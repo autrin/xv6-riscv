@@ -107,8 +107,8 @@ int dequeue(){
   return pid;
 }
 
-uint64 
-stride(int pid, int stride_value)
+uint64
+stride(int pid, int stride_value) //! not using the qtable here
 {
   struct proc *p;
   // Find the process in proc[] by pid
@@ -268,7 +268,7 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
-  p->stride = 0;
+  p->stride = 1;
   p->runtime = 0;
 }
 
