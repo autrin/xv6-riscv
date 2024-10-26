@@ -44,7 +44,8 @@ fork_stride_test(void)
     }
 }
 
-int main(void) {
+int 
+main(void) {
     fork_stride_test();
     exit(0);
 }
