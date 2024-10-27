@@ -42,33 +42,6 @@ extern char trampoline[]; // trampoline.S
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
 
-// A round robin scheduler with time quanta of 2
-void 
-scheduler_rr(){
-// TODO
-  uint64 quanta = 2;
-  struct proc *p;
-  struct cpu *c = mycpu();
-  
-  c->proc = 0;
-  for(;;){
-    intr_on();
-
-    int found = 0;
-
-    for(p = qtable_stride; p < &qtable_stride[NPROC]; p++){
-      acquire(&p->lock);
-      if(p->state == RUNNABLE){
-        // enqueue(p->pid, qtable_stride[&p]->pass);
-      }
-    }
-  }
-
-}
-
-// TODO
-// scheduler_stride()
-
 // initialize all the entries of the qtable
 void 
 init_queue()
@@ -192,6 +165,9 @@ int dequeue() {
     return -1;  // Return error code
   }
 }
+
+// TODO
+// scheduler_stride()
 
 
 
@@ -422,6 +398,10 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
+  uint64 pindex = p - proc;
+  enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
+                                              // the enqueue will check the type of scheduler
+                                              // and decide whether to use pass
 
   release(&p->lock);
 }
@@ -492,6 +472,10 @@ fork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
+  uint64 pindex = np - proc;
+  enqueue(np->pid, qtable_stride[pindex].pass); // add the process to the queue
+                                                // the enqueue will check the type of scheduler
+                                                // and decide whether to use pass
   release(&np->lock);
 
   return pid;
@@ -686,6 +670,10 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
+  uint64 pindex = p - proc;
+  enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
+                                               // the enqueue will check the type of scheduler
+                                               // and decide whether to use pass
   sched();
   release(&p->lock);
 }
@@ -757,6 +745,10 @@ wakeup(void *chan)
       acquire(&p->lock);
       if(p->state == SLEEPING && p->chan == chan) {
         p->state = RUNNABLE;
+        uint64 pindex = p - proc;
+        enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
+                                                     // the enqueue will check the type of scheduler
+                                                     // and decide whether to use pass
       }
       release(&p->lock);
     }
@@ -778,6 +770,10 @@ kill(int pid)
       if(p->state == SLEEPING){
         // Wake process from sleep().
         p->state = RUNNABLE;
+        uint64 pindex = p - proc;
+        enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
+                                                      // the enqueue will check the type of scheduler
+                                                      // and decide whether to use pass
       }
       release(&p->lock);
       return 0;
