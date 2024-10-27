@@ -59,7 +59,7 @@ scheduler_rr(){
     for(p = qtable_stride; p < &qtable_stride[NPROC]; p++){
       acquire(&p->lock);
       if(p->state == RUNNABLE){
-        // enqueue_stride(p->pid, qtable_stride[&p]->pass);
+        // enqueue(p->pid, qtable_stride[&p]->pass);
       }
     }
   }
@@ -98,25 +98,49 @@ init_queue()
   qtable_rr[NPROC+1].next = MAX_UINT64;
 }
 
-// Enqueue a process in qtable_stride
-void 
-enqueue_stride(int pid, uint64 pass) {
-  int current = qtable_stride[NPROC].next;
-  int previous = NPROC;
+// Enqueue a process in qtable
+void enqueue(int pid, uint64 pass)
+{
+  // enqueue to the stride queue
+  if (SCHEDULER == 2)
+  {
+     int current = qtable_rr[NPROC].next; // Start at the head
+    int previus = NPROC;                 // Track the previous index
 
-  // Traverse the queue to find the correct spot based on pass value
-  while (current != NPROC+1 && qtable_stride[current].pass < pass) {
-    previous = current;
-    current = qtable_stride[current].next;
+    // Insert the new entry between previous and current
+    qtable_rr[pid].next = current;
+    qtable_rr[pid].prev = previus;
+    // Don't do anything with pass since it was initialized to -1 before
+
+    qtable_rr[previus].next = pid; // head's next
+    if (current != NPROC + 1)
+    {                                // If not at the tail
+      qtable_rr[current].prev = pid; // Update current's previous pointer
+    }
   }
+  else if (SCHEDULER == 3){ // ! can it be 3?
+    int current = qtable_stride[NPROC].next;
+    int previous = NPROC;
 
-  qtable_stride[pid].pass = pass;
-  qtable_stride[pid].prev = previous;
-  qtable_stride[pid].next = current;
+    // Traverse the queue to find the correct spot based on pass value
+    while (current != NPROC + 1 && qtable_stride[current].pass < pass)
+    {
+      previous = current;
+      current = qtable_stride[current].next;
+    }
 
-  qtable_stride[previous].next = pid;
-  if (current != NPROC+1) {  
-    qtable_stride[current].prev = pid;
+    qtable_stride[pid].pass = pass;
+    qtable_stride[pid].prev = previous;
+    qtable_stride[pid].next = current;
+
+    qtable_stride[previous].next = pid;
+    if (current != NPROC + 1)
+    {
+      qtable_stride[current].prev = pid;
+    }
+  }
+  else{
+    printf("Scheduler is original!!!!!!!!!!!");
   }
 }
 
@@ -140,23 +164,6 @@ int dequeue_stride(){
   return pid;
 }
 
-uint64
-stride(int pid, int stride_value)
-{
-  struct proc *p;
-  for (p = proc; p < &proc[NPROC]; p++)
-  {
-    if (p->pid == pid)
-    {
-      acquire(&p->lock);        // Lock the process before modifying
-      p->stride = stride_value;
-      release(&p->lock);
-      return 0;
-    }
-  }
-  printf("Process with pid %d not found in stride()\n", pid);
-  return -1; // Return -1 if process is not found
-}
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
