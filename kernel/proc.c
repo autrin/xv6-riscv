@@ -170,37 +170,54 @@ int dequeue() {
 // scheduler_stride()
 
 // A round robin scheduler with time quanta of 2
-void 
-scheduler_rr(){
+void scheduler_rr() {
   uint64 quanta = 2;
   struct proc *p;
   struct cpu *c = mycpu();
   
   c->proc = 0;
-  for(;;){
-    intr_on();
+  for (;;) {
+    intr_on();  // Enable interrupts to avoid deadlocks
     int found = 0;
-    int dequeued = dequeue();
-    if(dequeued == -1){
-      printf("The dequeued value was -1 in scheduler_rr()\n");
-      printf("The length of qtable_rr was: %d\n", sizeof(qtable_rr)/sizeof(qtable_rr[0]));
-      printf("The SCHEDULELR was %d\n", SCHEDULER);
-      return;
+    int dequeued = dequeue();  // Dequeue the next process
+    if (dequeued == -1) {
+      // No process in the queue
+      continue;  // Go back to the start of the loop and wait for an interrupt
     }
+    
     p = &proc[dequeued];
     acquire(&p->lock);
-    p->state = RUNNING;
-    c->proc = p;
-    swtch(&c->context, &p->context);
     
-    // Process is done running for now.
-    // It should have changed its p->state before coming back.
+    if (p->state == RUNNABLE) {  // Check if the process is runnable
+      // Set process to RUNNING state and run it for the given quanta
+      p->state = RUNNING;
+      c->proc = p;
+      
+      // Simulate running the process for the quanta duration
+      int ticks = 0;
+      while (ticks < quanta) {
+        ticks++;
+        // simulate the process running, e.g., by invoking swtch
+        swtch(&c->context, &p->context);  // Context switch into the process
+      }
+      
+      // After the quanta expires, check the process state again
+      if (p->state == RUNNING) {
+        // If still running, move it back to the queue for further execution
+        p->state = RUNNABLE;
+        enqueue(p->pid, 0);  // Re-enqueue the process (RR doesn't use pass, so pass = 0)
+      }
+    }
+
+    // Process is done for this time slice, reset the CPU's proc
     c->proc = 0;
-    found = 1;
     release(&p->lock);
-    if(found == 0){ // nothing to run; stop running on this core until an interrupt.
+    found = 1;
+    
+    if (found == 0) {
+      // No runnable process found; wait for the next interrupt
       intr_on();
-      asm volatile("wfi");
+      asm volatile("wfi");  // Wait for interrupt
     }
   }
 }
