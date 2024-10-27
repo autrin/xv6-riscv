@@ -101,26 +101,28 @@ init_queue()
 // Enqueue a process in qtable
 void enqueue(int pid, uint64 pass)
 {
-  // enqueue to the stride queue
-  if (SCHEDULER == 2)
+  //!  If you plan to switch between schedulers at runtime,
+  //!  make sure SCHEDULER is a runtime variable, not just a compile-time macro.
+  if (SCHEDULER == 2)  // Round-robin queue
   {
-     int current = qtable_rr[NPROC].next; // Start at the head
-    int previus = NPROC;                 // Track the previous index
+    int current = qtable_rr[NPROC].next; // Start at the head
+    int previous = NPROC;                // Track the previous index
 
     // Insert the new entry between previous and current
     qtable_rr[pid].next = current;
-    qtable_rr[pid].prev = previus;
-    // Don't do anything with pass since it was initialized to -1 before
+    qtable_rr[pid].prev = previous;
 
-    qtable_rr[previus].next = pid; // head's next
-    if (current != NPROC + 1)
-    {                                // If not at the tail
+    // Set the previous and next pointers for the surrounding elements
+    qtable_rr[previous].next = pid; // head's next
+    if (current != NPROC + 1)       // If not at the tail
+    {
       qtable_rr[current].prev = pid; // Update current's previous pointer
     }
   }
-  else if (SCHEDULER == 3){ // ! can it be 3?
-    int current = qtable_stride[NPROC].next;
-    int previous = NPROC;
+  else if (SCHEDULER == 3)  // Stride queue
+  {
+    int current = qtable_stride[NPROC].next; // Start at the head
+    int previous = NPROC;                    // Track the previous index
 
     // Traverse the queue to find the correct spot based on pass value
     while (current != NPROC + 1 && qtable_stride[current].pass < pass)
@@ -129,20 +131,23 @@ void enqueue(int pid, uint64 pass)
       current = qtable_stride[current].next;
     }
 
+    // Insert the process into the queue at the correct location
     qtable_stride[pid].pass = pass;
     qtable_stride[pid].prev = previous;
     qtable_stride[pid].next = current;
 
-    qtable_stride[previous].next = pid;
-    if (current != NPROC + 1)
+    qtable_stride[previous].next = pid; // Connect the previous to new process
+    if (current != NPROC + 1)           // If not at the tail
     {
-      qtable_stride[current].prev = pid;
+      qtable_stride[current].prev = pid; // Connect the next process back to new process
     }
   }
-  else{
-    printf("Scheduler is original!!!!!!!!!!!");
+  else  // Original scheduler or error handling
+  {
+    printf("Scheduler is original but we are in enqueue()!!!!!!!!!!!");
   }
 }
+
 
 // Dequeue a process from qtable_stride
 int dequeue_stride(){
