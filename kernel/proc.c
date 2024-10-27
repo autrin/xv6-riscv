@@ -16,9 +16,11 @@ struct qentry{
   uint64 next; // index of next qentry in list
 };
 
-// A fixed size table where the index of a process in proc[] is the same in qtable[]
+// A fixed size table where the index of a process in proc[] is the same in qtable_stride[]
 // Index of head is stored at 64 and tail at 65
-struct qentry qtable[NPROC+2];
+struct qentry qtable_stride[NPROC+2];
+
+struct qentry qtable_rr[NPROC+2];
 
 struct cpu cpus[NCPU];
 
@@ -40,10 +42,29 @@ extern char trampoline[]; // trampoline.S
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
 
-// void 
-// scheduler_rr(){
+// A round robin scheduler with time quanta of 2
+void 
+scheduler_rr(){
 // TODO
-// }
+  uint64 quanta = 2;
+  struct proc *p;
+  struct cpu *c = mycpu();
+  
+  c->proc = 0;
+  for(;;){
+    intr_on();
+
+    int found = 0;
+
+    for(p = qtable_stride; p < &qtable_stride[NPROC]; p++){
+      acquire(&p->lock);
+      if(p->state == RUNNABLE){
+        // enqueue_stride(p->pid, qtable_stride[&p]->pass);
+      }
+    }
+  }
+
+}
 
 // TODO
 // scheduler_stride()
@@ -52,57 +73,69 @@ struct spinlock wait_lock;
 void 
 init_queue()
 {
+  // qtabe_stride initializtion
   for(int i = 0; i < NPROC; i++){
-    qtable[i].pass = MAX_UINT64; // indicating an empty entry
-    qtable[i].prev = MAX_UINT64;
-    qtable[i].next = MAX_UINT64;
+    qtable_stride[i].pass = MAX_UINT64; // indicating an empty entry
+    qtable_stride[i].prev = MAX_UINT64;
+    qtable_stride[i].next = MAX_UINT64;
   }
 
-  qtable[NPROC].next = NPROC+1;
-  qtable[NPROC].prev = MAX_UINT64; // No previous entry for the head
-  qtable[NPROC+1].prev = NPROC;
-  qtable[NPROC+1].next = MAX_UINT64; // No next entry for the tail
+  qtable_stride[NPROC].next = NPROC+1;
+  qtable_stride[NPROC].prev = MAX_UINT64; // No previous entry for the head
+  qtable_stride[NPROC+1].prev = NPROC;
+  qtable_stride[NPROC+1].next = MAX_UINT64; // No next entry for the tail
+
+  // qtable_rr initialization
+  for(int i = 0; i < NPROC; i++){
+    qtable_rr[i].pass = MAX_UINT64;
+    qtable_rr[i].prev = MAX_UINT64;
+    qtable_rr[i].next = MAX_UINT64;
+  }
+
+  qtable_rr[NPROC].next = NPROC+1;
+  qtable_rr[NPROC].prev = MAX_UINT64;
+  qtable_rr[NPROC+1].prev = NPROC;
+  qtable_rr[NPROC+1].next = MAX_UINT64;
 }
 
-// Enqueue a process in qtable
+// Enqueue a process in qtable_stride
 void 
-enqueue(int pid, uint64 pass) {
-  int current = qtable[NPROC].next;  // Start at the head
-  int previous = NPROC;  // Track the previous index
+enqueue_stride(int pid, uint64 pass) {
+  int current = qtable_stride[NPROC].next;
+  int previous = NPROC;
 
   // Traverse the queue to find the correct spot based on pass value
-  while (current != NPROC+1 && qtable[current].pass < pass) {
+  while (current != NPROC+1 && qtable_stride[current].pass < pass) {
     previous = current;
-    current = qtable[current].next;
+    current = qtable_stride[current].next;
   }
 
-  // Insert the new entry between previous and current
-  qtable[pid].pass = pass;
-  qtable[pid].prev = previous;
-  qtable[pid].next = current;
+  qtable_stride[pid].pass = pass;
+  qtable_stride[pid].prev = previous;
+  qtable_stride[pid].next = current;
 
-  qtable[previous].next = pid;
-  if (current != NPROC+1) {  // If not at the tail
-    qtable[current].prev = pid;
+  qtable_stride[previous].next = pid;
+  if (current != NPROC+1) {  
+    qtable_stride[current].prev = pid;
   }
 }
 
-// Dequeue a process from qtable
-int dequeue(){
-  int pid = qtable[NPROC].next; // get the entry that's right after the head
+// Dequeue a process from qtable_stride
+int dequeue_stride(){
+  int pid = qtable_stride[NPROC].next; // get the entry that's right after the head
   if(pid == NPROC+1){ // Queue is empty
     return -1;
   }
   // Update the head pointer
-  qtable[NPROC].next = qtable[pid].next; // head now points to the next entry after the head's next entry (skipped the first entry after head)
-  if(qtable[pid].next != NPROC+1){ // if the next entry after the head's next entry is not the tail
-    qtable[qtable[pid].next].prev = NPROC; // make the head's next's prev point to the head
+  qtable_stride[NPROC].next = qtable_stride[pid].next; // head now points to the next entry after the head's next entry (skipped the first entry after head)
+  if(qtable_stride[pid].next != NPROC+1){ // if the next entry after the head's next entry is not the tail
+    qtable_stride[qtable_stride[pid].next].prev = NPROC; // make the head's next's prev point to the head
   }
 
   // Reset the dequeued process entry. This is the smallest pass value
-  qtable[pid].pass = MAX_UINT64;
-  qtable[pid].next = MAX_UINT64;
-  qtable[pid].prev = MAX_UINT64;
+  qtable_stride[pid].pass = MAX_UINT64;
+  qtable_stride[pid].next = MAX_UINT64;
+  qtable_stride[pid].prev = MAX_UINT64;
 
   return pid;
 }
