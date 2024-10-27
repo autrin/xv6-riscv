@@ -181,6 +181,12 @@ scheduler_rr(){
     intr_on();
     int found = 0;
     int dequeued = dequeue();
+    if(dequeued == -1){
+      printf("The dequeued value was -1 in scheduler_rr()\n");
+      printf("The length of qtable_rr was: %d\n", sizeof(qtable_rr)/sizeof(qtable_rr[0]));
+      printf("The SCHEDULELR was %d\n", SCHEDULER);
+      return;
+    }
     p = &proc[dequeued];
     acquire(&p->lock);
     p->state = RUNNING;
