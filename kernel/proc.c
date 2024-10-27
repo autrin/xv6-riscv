@@ -169,7 +169,35 @@ int dequeue() {
 // TODO
 // scheduler_stride()
 
-
+// A round robin scheduler with time quanta of 2
+void 
+scheduler_rr(){
+  uint64 quanta = 2;
+  struct proc *p;
+  struct cpu *c = mycpu();
+  
+  c->proc = 0;
+  for(;;){
+    intr_on();
+    int found = 0;
+    int dequeued = dequeue();
+    p = &proc[dequeued];
+    acquire(&p->lock);
+    p->state = RUNNING;
+    c->proc = p;
+    swtch(&c->context, &p->context);
+    
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    c->proc = 0;
+    found = 1;
+    release(&p->lock);
+    if(found == 0){ // nothing to run; stop running on this core until an interrupt.
+      intr_on();
+      asm volatile("wfi");
+    }
+  }
+}
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
