@@ -439,6 +439,8 @@ uchar initcode[] = {
 void
 userinit(void)
 {
+  printf("Creating init process\n");
+
   struct proc *p;
 
   p = allocproc();
@@ -675,6 +677,7 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+        printf("Switching to process %d\n", p->pid);
         swtch(&c->context, &p->context);
 
         // Process is done running for now.
