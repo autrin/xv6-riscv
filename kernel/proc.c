@@ -364,7 +364,7 @@ found:
 
   if(SCHEDULER == 3){
     uint64 lowest_pass = find_lowest_pass();
-    qtable_stride[p - proc].pass = lowest_pass + (p->stride ? p->stride : (printf("ERROR! The stride value was not initialized before in allocproc()"), 0));
+    qtable_stride[p - proc].pass = lowest_pass + (p->stride ? p->stride : 0);
   }
   //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
   return p;
