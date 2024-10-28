@@ -622,7 +622,7 @@ wait(uint64 addr)
 
         havekids = 1;
         if(pp->state == ZOMBIE){
-          printf("pp was zombie!!!!! in wait()");
+          // printf("pp was zombie!!!!! in wait()");
           // Found one.
           pid = pp->pid;
           if(addr != 0 && copyout(p->pagetable, addr, (char *)&pp->xstate,
@@ -683,7 +683,7 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
-        printf("Switching to process %d\n", p->pid);
+        printf("Switching to process %d\n", p->pid); // Todo comment this test
         swtch(&c->context, &p->context);
 
         // Process is done running for now.
