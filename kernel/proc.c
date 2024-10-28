@@ -188,7 +188,10 @@ void scheduler_rr() {
     p = &proc[dequeued];
     acquire(&p->lock);
     
-    if (p->state == RUNNABLE) {  // Check if the process is runnable
+    if (p->state == RUNNABLE) {
+      // Initialize time slice tracking
+      p->ticks_used = 0;  // Reset the tick counter for this process
+      
       // Set process to RUNNING state and run it for the given quanta
       p->state = RUNNING;
       c->proc = p;
