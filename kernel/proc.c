@@ -212,6 +212,17 @@ scheduler_rr_stride() {
   }
 }
 
+uint64
+find_lowest_pass(void){
+  uint64 lowest_pass = MAX_UINT64;
+  for(int i = 0; i < NPROC; i++){
+    if(qtable_stride[i].pass != MAX_UINT64 && qtable_stride[i].pass < lowest_pass){
+      lowest_pass = qtable_stride[i].pass;
+    }
+  }
+  return lowest_pass;
+}
+
 // Set the stride value
 uint64
 stride(int pid, int stride_value)
