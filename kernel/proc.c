@@ -202,7 +202,7 @@ scheduler_rr_stride() {
       if (p->state == RUNNING) {
         // If the process is still runnable, re-enqueue it
         if(SCHEDULER == 2 || SCHEDULER == 3){
-          enqueue(p->pid, 0);  // Round-robin doesn't use pass, so pass = 0
+          enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
         }
       }
     }
@@ -664,7 +664,6 @@ scheduler(void)
 {
   if(SCHEDULER == 2 || SCHEDULER == 3){
       scheduler_rr_stride();
-      return; // Ensure the function exits here
   }
   struct proc *p;
   struct cpu *c = mycpu();
