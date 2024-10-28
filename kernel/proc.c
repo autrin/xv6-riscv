@@ -621,6 +621,7 @@ wait(uint64 addr)
         acquire(&pp->lock);
 
         if(pp->state == ZOMBIE){
+          printf("pp was zombie!!!!! in wait()");
           // Found one.
           pid = pp->pid;
           if(addr != 0 && copyout(p->pagetable, addr, (char *)&pp->xstate,
