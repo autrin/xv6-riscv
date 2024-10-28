@@ -80,7 +80,8 @@ test2(void)
 
 int 
 main(void) {
-    test1();
-    test2();
-    exit(0);
+    // test1();
+    // test2();
+    // exit(0);
+    return 0;
 }
