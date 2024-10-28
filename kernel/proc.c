@@ -212,6 +212,17 @@ scheduler_rr_stride() {
   }
 }
 
+uint64
+find_lowest_pass(void){
+  uint64 lowest_pass = MAX_UINT64;
+  for(int i = 0; i < NPROC; i++){
+    if(qtable_stride[i].pass != MAX_UINT64 && qtable_stride[i].pass < lowest_pass){
+      lowest_pass = qtable_stride[i].pass;
+    }
+  }
+  return lowest_pass;
+}
+
 // Set the stride value
 uint64
 stride(int pid, int stride_value)
@@ -351,6 +362,11 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+  if(SCHEDULER == 3){
+    uint64 lowest_pass = find_lowest_pass();
+    qtable_stride[p - proc].pass = lowest_pass + (p->stride ? p->stride : (printf("ERROR! The stride value was not initialized before in allocproc()"), 0));
+  }
+  //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
   return p;
 }
 
