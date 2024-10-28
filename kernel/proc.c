@@ -117,7 +117,7 @@ void enqueue(int pid, uint64 pass)
   }
   else {  // Error handling for unsupported scheduler types
     printf("Error: Unsupported scheduler type of %d in enqueue().\n", SCHEDULER);
-    return -1;  // Return error code
+    return;  // Return error code
   }
 }
 
