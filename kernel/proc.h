@@ -132,6 +132,6 @@ void enqueue(int pid, uint64 pass);
 int dequeue();
 
 // Implements a round-robin scheduler
-void scheduler_rr();
+void scheduler_rr_stride();
 
 // #endif
