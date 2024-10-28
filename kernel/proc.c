@@ -171,7 +171,6 @@ int dequeue() {
 
 // A round robin scheduler with time quanta of 2
 void scheduler_rr() {
-  uint64 quanta = 2;
   struct proc *p;
   struct cpu *c = mycpu();
   
@@ -191,37 +190,22 @@ void scheduler_rr() {
     if (p->state == RUNNABLE) {
       // Initialize time slice tracking
       p->ticks_used = 0;  // Reset the tick counter for this process
-      
+
       // Set process to RUNNING state and run it for the given quanta
       p->state = RUNNING;
       c->proc = p;
+
+      swtch(&c->context, &p->context);  // Context switch into the process
       
-      // Simulate running the process for the quanta duration
-      int ticks = 0;
-      while (ticks < quanta) {
-        ticks++;
-        // simulate the process running, e.g., by invoking swtch
-        swtch(&c->context, &p->context);  // Context switch into the process
-      }
-      
-      // After the quanta expires, check the process state again
+      // The process is done running for now
       if (p->state == RUNNING) {
-        // If still running, move it back to the queue for further execution
-        p->state = RUNNABLE;
-        enqueue(p->pid, 0);  // Re-enqueue the process (RR doesn't use pass, so pass = 0)
+        // If the process is still runnable, re-enqueue it
+        enqueue(p->pid, 0);  // Round-robin doesn't use pass, so pass = 0
       }
     }
 
-    // Process is done for this time slice, reset the CPU's proc
-    c->proc = 0;
+    c->proc = 0; // Reset the CPU's proc
     release(&p->lock);
-    found = 1;
-    
-    if (found == 0) {
-      // No runnable process found; wait for the next interrupt
-      intr_on();
-      asm volatile("wfi");  // Wait for interrupt
-    }
   }
 }
 
@@ -724,11 +708,12 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
+
+  // Add the process back to the queue based on the current scheduler
   uint64 pindex = p - proc;
-  enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
-                                               // the enqueue will check the type of scheduler
-                                               // and decide whether to use pass
-  sched();
+  enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+
+  sched(); // Call the scheduler to pick the next process
   release(&p->lock);
 }
 
