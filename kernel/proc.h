@@ -1,9 +1,9 @@
-#ifndef PROC_H
-#define PROC_H
+// #ifndef PROC_H
+// #define PROC_H
 
-#include "spinlock.h"  // Include spinlock.h for struct spinlock definition
-#include "types.h"
-#include "param.h"
+// #include "spinlock.h"  // Include spinlock.h for struct spinlock definition
+// #include "types.h"
+// #include "param.h"
 
 // Saved registers for kernel context switches.
 struct context {
@@ -134,4 +134,4 @@ int dequeue();
 // Implements a round-robin scheduler
 void scheduler_rr();
 
-#endif
+// #endif
