@@ -72,7 +72,8 @@ init_queue()
 }
 
 // Enqueue a process in qtable
-void enqueue(int pid, uint64 pass)
+void 
+enqueue(int pid, uint64 pass)
 {
   //!  If you plan to switch between schedulers at runtime,
   //!  make sure SCHEDULER is a runtime variable, not just a compile-time macro.
@@ -122,7 +123,8 @@ void enqueue(int pid, uint64 pass)
 }
 
 // Dequeue a process from qtable
-int dequeue() {
+int 
+dequeue() {
   if (SCHEDULER == 3) {  // Stride queue
     int pid = qtable_stride[NPROC].next;  // get the entry that's right after the head
     if (pid == NPROC + 1) {  // Queue is empty
@@ -170,7 +172,8 @@ int dequeue() {
 // scheduler_stride()
 
 // A round robin scheduler with time quanta of 2
-void scheduler_rr() {
+void 
+scheduler_rr() {
   struct proc *p;
   struct cpu *c = mycpu();
   

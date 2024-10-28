@@ -112,3 +112,11 @@ struct proc {
 
 uint64
 stride(int pid, int stride_value);
+void 
+init_queue();
+void
+enqueue(int pid, uint64 pass);
+int
+dequeue();
+void 
+scheduler_rr();
