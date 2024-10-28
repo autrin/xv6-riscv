@@ -117,15 +117,21 @@ struct proc {
   int ticks_used;              // Number of ticks used in current time slice
 };
 
-uint64
-stride(int pid, int stride_value);
-void 
-init_queue();
-void
-enqueue(int pid, uint64 pass);
-int
-dequeue();
-void 
-scheduler_rr();
+// Function prototypes for process management and scheduling
+
+// Sets the stride value for the given process
+uint64 stride(int pid, int stride_value);
+
+// Initializes the scheduling queue
+void init_queue();
+
+// Enqueues a process into the scheduling queue
+void enqueue(int pid, uint64 pass);
+
+// Dequeues a process from the scheduling queue
+int dequeue();
+
+// Implements a round-robin scheduler
+void scheduler_rr();
 
 #endif
