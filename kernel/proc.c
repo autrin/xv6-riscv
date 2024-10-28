@@ -117,7 +117,7 @@ void enqueue(int pid, uint64 pass)
   }
   else {  // Error handling for unsupported scheduler types
     printf("Error: Unsupported scheduler type of %d in enqueue().\n", SCHEDULER);
-    return;  // Return error code
+    return;  // Return error fcode
   }
 }
 
@@ -177,7 +177,6 @@ void scheduler_rr() {
   c->proc = 0;
   for (;;) {
     intr_on();  // Enable interrupts to avoid deadlocks
-    int found = 0;
     int dequeued = dequeue();  // Dequeue the next process
     if (dequeued == -1) {
       // No process in the queue
@@ -598,7 +597,6 @@ wait(uint64 addr)
         // make sure the child isn't still in exit() or swtch().
         acquire(&pp->lock);
 
-        havekids = 1;
         if(pp->state == ZOMBIE){
           // Found one.
           pid = pp->pid;
