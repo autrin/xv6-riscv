@@ -3,6 +3,7 @@
 #include "memlayout.h"
 #include "riscv.h"
 #include "defs.h"
+#include "proc.h"  // Include proc.h to access process-related functions and structures
 
 volatile static int started = 0;
 

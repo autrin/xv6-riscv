@@ -1,3 +1,10 @@
+#ifndef PROC_H
+#define PROC_H
+
+#include "spinlock.h"  // Include spinlock.h for struct spinlock definition
+#include "types.h"
+#include "param.h"
+
 // Saved registers for kernel context switches.
 struct context {
   uint64 ra;
@@ -120,3 +127,5 @@ int
 dequeue();
 void 
 scheduler_rr();
+
+#endif
