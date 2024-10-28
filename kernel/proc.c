@@ -255,6 +255,7 @@ procinit(void)
       p->state = UNUSED;
       p->kstack = KSTACK((int) (p - proc));
       p->runtime = 0; // initialize runtime to 0
+      p->ticks_used = 0;
   }
 }
 
@@ -371,6 +372,7 @@ freeproc(struct proc *p)
   p->state = UNUSED;
   p->stride = 1;
   p->runtime = 0;
+  p->ticks_used = 0;
 }
 
 // Create a user page table for a given process, with no user memory,
