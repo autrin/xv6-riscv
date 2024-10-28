@@ -459,9 +459,10 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
-  uint64 pindex = p - proc;
-  enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
-
+  if(SCHEDULER == 2 || SCHEDULER == 3){
+    uint64 pindex = p - proc;
+    enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+  }
   release(&p->lock);
 }
 
@@ -729,11 +730,11 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
-
-  // Add the process back to the queue based on the current scheduler
-  uint64 pindex = p - proc;
-  enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
-
+  if(SCHEDULER == 2 || SCHEDULER == 3){
+    // Add the process back to the queue based on the current scheduler
+    uint64 pindex = p - proc;
+    enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+  }
   sched(); // Call the scheduler to pick the next process
   release(&p->lock);
 }
@@ -805,10 +806,10 @@ wakeup(void *chan)
       acquire(&p->lock);
       if(p->state == SLEEPING && p->chan == chan) {
         p->state = RUNNABLE;
-        uint64 pindex = p - proc;
-        enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
-                                                     // the enqueue will check the type of scheduler
-                                                     // and decide whether to use pass
+        if(SCHEDULER == 2 || SCHEDULER == 3){
+          uint64 pindex = p - proc;
+          enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+        }
       }
       release(&p->lock);
     }
@@ -830,10 +831,10 @@ kill(int pid)
       if(p->state == SLEEPING){
         // Wake process from sleep().
         p->state = RUNNABLE;
-        uint64 pindex = p - proc;
-        enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
-                                                      // the enqueue will check the type of scheduler
-                                                      // and decide whether to use pass
+        if(SCHEDULER == 2 || SCHEDULER == 3){
+          uint64 pindex = p - proc;
+          enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+        }
       }
       release(&p->lock);
       return 0;
