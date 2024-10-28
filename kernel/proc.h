@@ -105,8 +105,9 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 
-  uint runtime;                 // Process runtime is the time spent on the CPU
+  uint runtime;                // Process runtime is the time spent on the CPU
   int stride;                  // Stride value for the process
+  int ticks_used;              // Number of ticks used in current time slice
 };
 
 uint64
