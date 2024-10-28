@@ -208,6 +208,23 @@ void scheduler_rr() {
   }
 }
 
+// Set the stride value
+uint64
+stride(int pid, int stride_value)
+{
+    struct proc *p;
+    for(p = proc; p < &proc[NPROC]; p++){
+        if(p->pid == pid){
+            acquire(&p->lock); // Lock the process before modifying
+            p->stride = stride_value; // Assign the correct stride value
+            release(&p->lock); // Release the lock
+            return 0;
+        }
+    }
+    printf("Process with pid %d not found in stride()\n", pid);
+    return -1; // Return -1 if process is not found
+}
+
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
