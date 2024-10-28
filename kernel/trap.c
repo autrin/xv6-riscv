@@ -29,7 +29,6 @@ trapinithart(void)
   w_stvec((uint64)kernelvec);
 }
 
-//
 // handle an interrupt, exception, or system call from user space.
 // called from trampoline.S
 //
@@ -37,7 +36,7 @@ void
 usertrap(void)
 {
   int which_dev = 0;
-
+  int quanta = 2; // RR time quanta
   if((r_sstatus() & SSTATUS_SPP) != 0)
     panic("usertrap: not from user mode");
 
@@ -78,12 +77,26 @@ usertrap(void)
 
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2){
-    yield();
-    printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
-    p->runtime++; // increment runtime of the process by 1
-    printf("Runtime of pid=%d and stride=%d after increamenting: %d\n", p->pid, p->stride, p->runtime);
+    if(SCHEDULER == 2){ // RR
+      if(p && p->state == RUNNING){
+        p->ticks_used++;
+
+        // TODO: comment the tests
+        printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
+        p->runtime++; // increment runtime of the process by 1
+        printf("Runtime of pid=%d and stride=%d after increamenting: %d\n", p->pid, p->stride, p->runtime);
+        
+        if(p->ticks_used >= quanta){
+          // Time slice exhausted, preempt the process
+          yield();  // Preempt the current process
+        }
+      }
+    }
+    else if (SCHEDULER == 1) {  // Original scheduler
+      // no quanta, just normal yielding
+      yield();
+    }
   }
-  
   usertrapret();
 }
 
