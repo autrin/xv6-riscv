@@ -455,9 +455,7 @@ userinit(void)
 
   p->state = RUNNABLE;
   uint64 pindex = p - proc;
-  enqueue(p->pid, qtable_stride[pindex].pass); // add the process to the queue
-                                              // the enqueue will check the type of scheduler
-                                              // and decide whether to use pass
+  enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
 
   release(&p->lock);
 }
