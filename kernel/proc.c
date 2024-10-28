@@ -168,12 +168,11 @@ dequeue() {
   }
 }
 
-// TODO
-// scheduler_stride()
 
-// A round robin scheduler with time quanta of 2
+
+// A round robin scheduler with time quanta of 2 and a stride scheduler
 void 
-scheduler_rr() {
+scheduler_rr_stride() {
   struct proc *p;
   struct cpu *c = mycpu();
   
@@ -663,6 +662,10 @@ wait(uint64 addr)
 void
 scheduler(void)
 {
+  if(SCHEDULER == 2 || SCHEDULER == 3){
+      scheduler_rr_stride();
+      return; // Ensure the function exits here
+  }
   struct proc *p;
   struct cpu *c = mycpu();
 
