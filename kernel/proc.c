@@ -533,10 +533,9 @@ fork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
-  uint64 pindex = np - proc;
-  enqueue(np->pid, qtable_stride[pindex].pass); // add the process to the queue
-                                                // the enqueue will check the type of scheduler
-                                                // and decide whether to use pass
+  if(SCHEDULER == 2 || SCHEDULER == 3){
+    enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
+  }
   release(&np->lock);
 
   return pid;
