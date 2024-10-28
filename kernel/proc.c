@@ -202,7 +202,9 @@ scheduler_rr() {
       // The process is done running for now
       if (p->state == RUNNING) {
         // If the process is still runnable, re-enqueue it
-        enqueue(p->pid, 0);  // Round-robin doesn't use pass, so pass = 0
+        if(SCHEDULER == 2 || SCHEDULER == 3){
+          enqueue(p->pid, 0);  // Round-robin doesn't use pass, so pass = 0
+        }
       }
     }
 
