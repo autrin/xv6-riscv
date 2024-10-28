@@ -622,6 +622,7 @@ wait(uint64 addr)
         // make sure the child isn't still in exit() or swtch().
         acquire(&pp->lock);
 
+        havekids = 1;
         if(pp->state == ZOMBIE){
           printf("pp was zombie!!!!! in wait()");
           // Found one.
