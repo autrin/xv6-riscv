@@ -8,6 +8,8 @@
 
 #define MAX_UINT64 (-1)
 #define EMPTY MAX_UINT64
+#define default_ticket_count 100
+#define large_constant 10000
 
 // a node of the linked list
 struct qentry{
@@ -365,6 +367,8 @@ found:
 
   if(SCHEDULER == 3){
     uint64 lowest_pass = find_lowest_pass();
+    p->tickets = default_ticket_count;
+    p->stride = large_constant / p->tickets; // Calculate stride based on tickets
     qtable_stride[p - proc].pass = lowest_pass + (p->stride ? p->stride : 0);
   }
   //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
