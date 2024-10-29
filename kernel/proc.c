@@ -479,7 +479,6 @@ userinit(void)
   p->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
     uint64 pindex = p - proc;
-    p->state = RUNNABLE;
     enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
   }
   release(&p->lock);
@@ -552,8 +551,7 @@ fork(void)
   acquire(&np->lock);
   np->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
-    p->state = RUNNABLE;
-    enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
+    enqueue(np->pid, (SCHEDULER == 3) ? qtable_stride[np - proc].pass : 0);
   }
   release(&np->lock);
 
@@ -757,7 +755,6 @@ yield(void)
   if(SCHEDULER == 2 || SCHEDULER == 3){
     // Add the process back to the queue based on the current scheduler
     uint64 pindex = p - proc;
-    p->state = RUNNABLE;
     enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
   }
   sched(); // Call the scheduler to pick the next process
@@ -835,7 +832,6 @@ wakeup(void *chan)
         p->state = RUNNABLE;
         if(SCHEDULER == 2 || SCHEDULER == 3){
           uint64 pindex = p - proc;
-          p->state = RUNNABLE;
           enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
         }
       }
@@ -861,7 +857,6 @@ kill(int pid)
         p->state = RUNNABLE;
         if(SCHEDULER == 2 || SCHEDULER == 3){
           uint64 pindex = p - proc;
-          p->state = RUNNABLE;
           enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
         }
       }
