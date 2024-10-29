@@ -93,7 +93,7 @@ usertrap(void)
         }
       }
     }
-    else if (SCHEDULER == 1) {  // Original scheduler
+    else if (SCHEDULER == 1 || SCHEDULER == 3) {
       // no quanta, just normal yielding
       yield();
     }
