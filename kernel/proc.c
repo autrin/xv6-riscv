@@ -192,45 +192,49 @@ test_enqueue(void){
 }
 
 // A round robin scheduler with time quanta of 2 and a stride scheduler
-void 
-scheduler_rr_stride() {
+void scheduler_rr_stride()
+{
   struct proc *p;
   struct cpu *c = mycpu();
-  
+
   c->proc = 0;
-  for (;;) {
-    intr_on();  // Enable interrupts to avoid deadlocks
+  for (;;)
+  {
+    intr_on(); // Enable interrupts to avoid deadlocks
     printf("We are in scheduler_rr_stride()'s for loop right after the call to intr_on()\n");
-    int dequeued = dequeue();  // Dequeue the next process
-    if (dequeued == -1) {
+    int dequeued = dequeue(); // Dequeue the next process
+    if (dequeued == -1)
+    {
       printf("dequeued was -1 in the for loop of scheduler_rr_stride()\n");
       // No process in the queue
-      continue;  // Go back to the start of the loop and wait for an interrupt
+      continue; // Go back to the start of the loop and wait for an interrupt
     }
-    
+
     p = &proc[dequeued];
     acquire(&p->lock);
-    
-    if (p->state == RUNNABLE) {
+
+    if (p->state == RUNNABLE)
+    {
       // Initialize time slice tracking
-      p->ticks_used = 0;  // Reset the tick counter for this process
+      p->ticks_used = 0; // Reset the tick counter for this process
 
       // Set process to RUNNING state and run it for the given quanta
       p->state = RUNNING;
       c->proc = p;
 
       // swtch(&c->context, &p->context);  // Context switch into the process
-      
+
       // The process is done running for now
-      if (p->state == RUNNING) {
-        // If the process is still runnable, re-enqueue it
-        if(SCHEDULER == 2 || SCHEDULER == 3){
-          p->state = RUNNABLE;
-          swtch(&c->context, &p->context);  // Context switch into the process
-          enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
-        }
+      // if (p->state == RUNNING) {
+      // If the process is still runnable, re-enqueue it
+      if (SCHEDULER == 2 || SCHEDULER == 3)
+      {
+        p->state = RUNNABLE;
+        swtch(&c->context, &p->context); // Context switch into the process
+        enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
       }
     }
+    // }
 
     c->proc = 0; // Reset the CPU's proc
     release(&p->lock);
