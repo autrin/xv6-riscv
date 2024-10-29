@@ -74,7 +74,7 @@ usertrap(void)
 
   if(killed(p))
     exit(-1);
-  printf("scause: 0x%lx\n\n", r_scause());
+  // printf("scause: 0x%lx\n\n", r_scause());
   printf("which_dev: %d\n\n", which_dev);
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2){
