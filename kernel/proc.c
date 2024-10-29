@@ -369,7 +369,7 @@ found:
     uint64 lowest_pass = find_lowest_pass();  // Find the lowest pass value to maintain queue order
     p->tickets = default_ticket_count;        // Initialize tickets
     p->stride = !p->stride ? (large_constant / p->tickets) : p->stride;  // Calculate stride if unset
-    printf("The stride is: %d in allocproc()", p->stride);
+    printf("The stride of processes with pid %d is: %d in allocproc()",p->pid, p->stride);
     qtable_stride[p - proc].pass = lowest_pass + p->stride;
   }
 
