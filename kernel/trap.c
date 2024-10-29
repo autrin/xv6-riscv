@@ -74,7 +74,8 @@ usertrap(void)
 
   if(killed(p))
     exit(-1);
-
+  printf("scause: 0x%lx\n\n", r_scause());
+  printf("which_dev: %d\n\n", which_dev);
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2){
     printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
@@ -232,4 +233,3 @@ devintr()
     return 0;
   }
 }
-
