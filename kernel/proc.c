@@ -181,8 +181,10 @@ scheduler_rr_stride() {
   c->proc = 0;
   for (;;) {
     intr_on();  // Enable interrupts to avoid deadlocks
+    printf("We are in the for loop right after the call to intr_on()\n");
     int dequeued = dequeue();  // Dequeue the next process
     if (dequeued == -1) {
+      printf("dequeued was -1 in the for loop of scheduler_rr_stride()\n");
       // No process in the queue
       continue;  // Go back to the start of the loop and wait for an interrupt
     }
