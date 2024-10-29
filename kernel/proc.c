@@ -94,7 +94,8 @@ enqueue(int pid, uint64 pass)
     {
       qtable_rr[current].prev = pid; // Update current's previous pointer
     }
-    printf(qtable_rr);
+    test_enqueue();
+    // exit(0);
   }
   else if (SCHEDULER == 3)  // Stride queue
   {
@@ -118,6 +119,7 @@ enqueue(int pid, uint64 pass)
     {
       qtable_stride[current].prev = pid; // Connect the next process back to new process
     }
+    test_enqueue();
   }
   else {  // Error handling for unsupported scheduler types
     printf("Error: Unsupported scheduler type of %d in enqueue().\n", SCHEDULER);
@@ -144,7 +146,6 @@ dequeue() {
     qtable_stride[pid].pass = MAX_UINT64;
     qtable_stride[pid].next = MAX_UINT64;
     qtable_stride[pid].prev = MAX_UINT64;
-    test_enqueue();
     return pid;  // Return the dequeued process id
   }
   else if (SCHEDULER == 2) {  // Round-Robin queue
@@ -162,7 +163,6 @@ dequeue() {
     // Reset the dequeued process entry
     qtable_rr[pid].next = MAX_UINT64;
     qtable_rr[pid].prev = MAX_UINT64;
-    test_enqueue();
     return pid;  // Return the dequeued process id
   }
   else {  // Error handling for unsupported scheduler types
