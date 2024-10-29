@@ -145,6 +145,7 @@ dequeue() {
     qtable_stride[pid].next = MAX_UINT64;
     qtable_stride[pid].prev = MAX_UINT64;
     test_enqueue();
+    exit(0);
     return pid;  // Return the dequeued process id
   }
   else if (SCHEDULER == 2) {  // Round-Robin queue
@@ -217,13 +218,14 @@ scheduler_rr_stride() {
       p->state = RUNNING;
       c->proc = p;
 
-      swtch(&c->context, &p->context);  // Context switch into the process
+      // swtch(&c->context, &p->context);  // Context switch into the process
       
       // The process is done running for now
       if (p->state == RUNNING) {
         // If the process is still runnable, re-enqueue it
         if(SCHEDULER == 2 || SCHEDULER == 3){
           p->state = RUNNABLE;
+          swtch(&c->context, &p->context);  // Context switch into the process
           enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
         }
       }
