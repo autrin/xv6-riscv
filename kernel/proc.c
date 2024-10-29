@@ -202,6 +202,7 @@ scheduler_rr_stride() {
       if (p->state == RUNNING) {
         // If the process is still runnable, re-enqueue it
         if(SCHEDULER == 2 || SCHEDULER == 3){
+          p->state = RUNNABLE;
           enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
         }
       }
@@ -550,7 +551,7 @@ fork(void)
   acquire(&np->lock);
   np->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
-    enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
+    enqueue(np->pid, (SCHEDULER == 3) ? qtable_stride[np - proc].pass : 0);
   }
   release(&np->lock);
 
@@ -758,6 +759,8 @@ yield(void)
   }
   sched(); // Call the scheduler to pick the next process
   release(&p->lock);
+  if(SCHEDULER == 2)
+    p->ticks_used = 0;
 }
 
 // A fork child's very first scheduling by scheduler()
