@@ -469,7 +469,8 @@ userinit(void)
 
   p = allocproc();
   initproc = p;
-  pintf("passed line 472");
+  printf("passed line 472\n");
+  
   // allocate one user page and copy initcode's instructions
   // and data into it.
   uvmfirst(p->pagetable, initcode, sizeof(initcode));
