@@ -115,6 +115,7 @@ struct proc {
   uint runtime;                // Process runtime is the time spent on the CPU
   int stride;                  // Stride value for the process
   int ticks_used;              // Number of ticks used in current time slice
+  int ticketsl                 // NUmber of tickets for stride scheduler
 };
 
 // Function prototypes for process management and scheduling
