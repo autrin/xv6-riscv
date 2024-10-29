@@ -365,12 +365,13 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
-  if(SCHEDULER == 3){
-    uint64 lowest_pass = find_lowest_pass();
-    p->tickets = default_ticket_count;
-    p->stride = large_constant / p->tickets; // Calculate stride based on tickets
-    qtable_stride[p - proc].pass = lowest_pass + (p->stride ? p->stride : 0);
+  if(SCHEDULER == 3) { // Only set stride if in Stride Scheduler mode
+      uint64 lowest_pass = find_lowest_pass();  // Find the lowest pass value to maintain queue order
+      p->tickets = default_ticket_count;        // Initialize tickets
+      p->stride = !p->stride ? (large_constant / p->tickets) : p->stride;  // Calculate stride if unset
+      qtable_stride[p - proc].pass = lowest_pass + p->stride;
   }
+
   //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
   return p;
 }
