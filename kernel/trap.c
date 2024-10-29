@@ -78,15 +78,19 @@ usertrap(void)
   printf("which_dev: %d\n\n", which_dev);
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2){
+    acquire(&p->lock);
+    // TODO: comment the tests
     printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
     p->runtime++; // increment runtime of the process by 1
     printf("Runtime of pid=%d and stride=%d after increamenting: %d\n", p->pid, p->stride, p->runtime);
+    release(&p->lock);
+
     if(SCHEDULER == 2){ // RR
       if(p && p->state == RUNNING){
+        acquire(&p->lock);
         p->ticks_used++;
 
-        // TODO: comment the tests
-        
+        release(&p->lock);
         if(p->ticks_used >= quanta){
           // Time slice exhausted, preempt the process
           yield();  // Preempt the current process
