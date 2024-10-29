@@ -116,7 +116,7 @@ struct proc {
   int stride;                  // Stride value for the process
   int ticks_used;              // Number of ticks used in current time slice
   int tickets                 // NUmber of tickets for stride scheduler
-};
+}
 
 // Function prototypes for process management and scheduling
 
