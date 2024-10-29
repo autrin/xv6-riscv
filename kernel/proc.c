@@ -329,7 +329,7 @@ allocpid()
 // If there are no free procs, or a memory allocation fails, return 0.
 static struct proc*
 allocproc(void)
-{
+{ //! maybe I need to enqueue here?
   struct proc *p;
 
   for(p = proc; p < &proc[NPROC]; p++) {
@@ -356,7 +356,7 @@ found:
   // An empty user page table.
   p->pagetable = proc_pagetable(p);
   if(p->pagetable == 0){
-    freeproc(p);
+    freeproc(p); 
     release(&p->lock);
     return 0;
   }
@@ -368,11 +368,13 @@ found:
   p->context.sp = p->kstack + PGSIZE;
 
   if(SCHEDULER == 3) { // Only set stride if in Stride Scheduler mode
+    acquire(&p->lock);
     uint64 lowest_pass = find_lowest_pass();  // Find the lowest pass value to maintain queue order
     p->tickets = default_ticket_count;        // Initialize tickets
     p->stride = !p->stride ? (large_constant / p->tickets) : p->stride;  // Calculate stride if unset
     printf("The stride of processes with pid %d is: %d in allocproc()\n",p->pid, p->stride);
     qtable_stride[p - proc].pass = lowest_pass + p->stride;
+    release(&p->lock);
   }
 
   //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
