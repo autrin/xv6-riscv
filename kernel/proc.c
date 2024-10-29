@@ -456,7 +456,7 @@ uchar initcode[] = {
 void
 userinit(void)
 {
-  printf("Creating init process\n");
+  printf("Creating init process\n"); //!
 
   struct proc *p;
 
