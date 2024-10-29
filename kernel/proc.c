@@ -43,7 +43,7 @@ extern char trampoline[]; // trampoline.S
 // memory model when using p->parent.
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
-
+void test_enqueue(void);
 // initialize all the entries of the qtable
 void 
 init_queue()
@@ -172,7 +172,7 @@ dequeue() {
 }
 
 void 
-test_enqueue(){
+test_enqueue(void){
   if(SCHEDULER == 2){
     printf("Round Robin Queue state after enqueue:\n");
     for (int i = 0; i < NPROC + 2; i++) {
