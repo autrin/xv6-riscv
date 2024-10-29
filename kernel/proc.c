@@ -94,6 +94,7 @@ enqueue(int pid, uint64 pass)
     {
       qtable_rr[current].prev = pid; // Update current's previous pointer
     }
+    printf(qtable_rr);
   }
   else if (SCHEDULER == 3)  // Stride queue
   {
@@ -143,7 +144,7 @@ dequeue() {
     qtable_stride[pid].pass = MAX_UINT64;
     qtable_stride[pid].next = MAX_UINT64;
     qtable_stride[pid].prev = MAX_UINT64;
-
+    test_enqueue();
     return pid;  // Return the dequeued process id
   }
   else if (SCHEDULER == 2) {  // Round-Robin queue
@@ -161,7 +162,7 @@ dequeue() {
     // Reset the dequeued process entry
     qtable_rr[pid].next = MAX_UINT64;
     qtable_rr[pid].prev = MAX_UINT64;
-
+    test_enqueue();
     return pid;  // Return the dequeued process id
   }
   else {  // Error handling for unsupported scheduler types
@@ -170,7 +171,23 @@ dequeue() {
   }
 }
 
-
+void 
+test_enqueue(){
+  if(SCHEDULER == 2){
+    printf("Round Robin Queue state after enqueue:\n");
+    for (int i = 0; i < NPROC + 2; i++) {
+      printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
+              i, qtable_rr[i].pass, qtable_rr[i].prev, qtable_rr[i].next);
+    }
+  }
+  else if(SCHEDULER == 3){
+    printf("Stride Queue state after enqueue:\n");
+    for (int i = 0; i < NPROC + 2; i++) {
+      printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
+              i, qtable_stride[i].pass, qtable_stride[i].prev, qtable_stride[i].next);
+    }
+  }
+}
 
 // A round robin scheduler with time quanta of 2 and a stride scheduler
 void 
@@ -344,7 +361,7 @@ allocproc(void)
 
 found:
   p->pid = allocpid();
-  p->state = USED;
+  p->state = USED; //! but this is used, not runnable
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
