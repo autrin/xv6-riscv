@@ -43,5 +43,8 @@ main()
     plicinithart();   // ask PLIC for device interrupts
   }
 
-  scheduler();        
+  if(SCHEDULER == 1)
+    scheduler();        
+  else
+    scheduler_rr_stride();
 }
