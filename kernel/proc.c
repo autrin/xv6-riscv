@@ -369,7 +369,7 @@ found:
     uint64 lowest_pass = find_lowest_pass();  // Find the lowest pass value to maintain queue order
     p->tickets = default_ticket_count;        // Initialize tickets
     p->stride = !p->stride ? (large_constant / p->tickets) : p->stride;  // Calculate stride if unset
-    printf("The stride of processes with pid %d is: %d in allocproc()",p->pid, p->stride);
+    printf("The stride of processes with pid %d is: %d in allocproc()\n",p->pid, p->stride);
     qtable_stride[p - proc].pass = lowest_pass + p->stride;
   }
 
@@ -686,6 +686,7 @@ void
 scheduler(void)
 {
   if(SCHEDULER == 2 || SCHEDULER == 3){
+      printf("We went inside of the if statment in the beginning of scheduler()");
       scheduler_rr_stride();
   }
   struct proc *p;
