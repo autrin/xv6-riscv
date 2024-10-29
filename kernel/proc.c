@@ -709,11 +709,11 @@ wait(uint64 addr)
 void
 scheduler(void)
 {
-  if(SCHEDULER == 2 || SCHEDULER == 3){
-      printf("We went inside of the if statment in the beginning of scheduler()\n");
-      scheduler_rr_stride();
-      printf("We are after the scheduler_rr_stride() call\n");
-  }
+  // if(SCHEDULER == 2 || SCHEDULER == 3){
+  //     printf("We went inside of the if statment in the beginning of scheduler()\n");
+  //     scheduler_rr_stride();
+  //     printf("We are after the scheduler_rr_stride() call\n");
+  // }
   struct proc *p;
   struct cpu *c = mycpu();
 
