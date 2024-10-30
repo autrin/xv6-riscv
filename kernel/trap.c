@@ -46,7 +46,6 @@ usertrap(void)
   w_stvec((uint64)kernelvec);
 
   struct proc *p = myproc();
-  printf("Entering usertrap for process %d\n", p->pid); // TODO: comment out
   
   // save user program counter.
   p->trapframe->epc = r_sepc();
@@ -80,12 +79,15 @@ usertrap(void)
   // printf("which_dev: %d\n\n", which_dev);
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2){
+    printf("Entering which_dev == 2 if in usertrap for process %d\n", p->pid); // TODO: comment out
     // if(!p->lock.locked)
       acquire(&p->lock);
     // TODO: comment the tests
-    printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
-    p->runtime++; // increment runtime of the process by 1
-    printf("Runtime of pid=%d and stride=%d after increamenting: %d\n", p->pid, p->stride, p->runtime);
+    if(p->state == RUNNING){
+      printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
+      p->runtime++; // increment runtime of the process by 1
+      printf("Runtime of pid=%d and stride=%d after increamenting: %d\n", p->pid, p->stride, p->runtime);
+    }
     // if(p->lock.locked)
       release(&p->lock);
 
@@ -165,7 +167,7 @@ kerneltrap()
   uint64 sepc = r_sepc();
   uint64 sstatus = r_sstatus();
   uint64 scause = r_scause();
-  printf("Kernel trap triggered with scause=0x%lx\n", scause); // TODO: comment out
+  // printf("Kernel trap triggered with scause=0x%lx\n", scause); // TODO: comment out
 
   if((sstatus & SSTATUS_SPP) == 0)
     panic("kerneltrap: not from supervisor mode");
@@ -191,7 +193,7 @@ kerneltrap()
 void
 clockintr()
 {
-  printf("Timer interrupt triggered.\n"); // TODO: comment out
+  // printf("Timer interrupt triggered.\n"); // TODO: comment out
 
   if(cpuid() == 0){
     acquire(&tickslock);
@@ -239,7 +241,7 @@ devintr()
     return 1;
   } else if(scause == 0x8000000000000005L){
     // timer interrupt.
-    printf("Timer interrupt recognized in devintr.\n"); // TODO: comment out
+    // printf("Timer interrupt recognized in devintr.\n"); // TODO: comment out
 
     clockintr();
     return 2;
