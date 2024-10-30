@@ -423,6 +423,7 @@ freeproc(struct proc *p)
   p->stride = 1;
   p->runtime = 0;
   p->ticks_used = 0;
+  p->tickets = 0;
 }
 
 // Create a user page table for a given process, with no user memory,
