@@ -579,6 +579,7 @@ fork(void)
   np->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
     enqueue(np->pid, (SCHEDULER == 3) ? qtable_stride[np - proc].pass : 0);
+    printf("Enqueued child process (pid=%d) from parent (pid=%d)\n", np->pid, p->pid);
   }
   release(&np->lock);
 
