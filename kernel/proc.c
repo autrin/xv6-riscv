@@ -76,8 +76,6 @@ init_queue(void)
 void 
 enqueue(int pid, uint64 pass)
 {
-  //!  If you plan to switch between schedulers at runtime,
-  //!  make sure SCHEDULER is a runtime variable, not just a compile-time macro.
   if (SCHEDULER == 2)  // Round-robin queue
   {
     int tail = qtable_rr[NPROC + 1].prev; // Get the current tail process ID
@@ -203,12 +201,22 @@ test_enqueue(void){
       printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
               i, qtable_rr[i].pass, qtable_rr[i].prev, qtable_rr[i].next);
     }
+    for (int i = 0; i < NPROC; i++) {
+      printf("Printing the proc[]\n");
+      printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
+              i, proc[i].pid);
+    }
   }
   else if(SCHEDULER == 3){
     printf("Stride Queue state after enqueue:\n");
     for (int i = 0; i < NPROC + 2; i++) {
       printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
               i, qtable_stride[i].pass, qtable_stride[i].prev, qtable_stride[i].next);
+    }
+    for (int i = 0; i < NPROC; i++) {
+      printf("Printing the proc[]\n");
+      printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
+              i, proc[i].pid);
     }
   }
 }
