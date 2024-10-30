@@ -213,7 +213,7 @@ void scheduler_rr_stride()
     }
 
     p = &proc[dequeued];
-    printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE", p->state);
+    printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE\n", p->state);
     acquire(&p->lock);
 
     if (p->state == RUNNABLE) {
