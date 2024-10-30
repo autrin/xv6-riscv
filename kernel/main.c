@@ -43,6 +43,7 @@ main()
     plicinithart();   // ask PLIC for device interrupts
   }
 
+  // Choose the correct scheduler function
   if(SCHEDULER == 1)
     scheduler();        
   else
