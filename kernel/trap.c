@@ -35,6 +35,7 @@ trapinithart(void)
 void
 usertrap(void)
 {
+
   int which_dev = 0;
   int quanta = 2; // RR time quanta
   if((r_sstatus() & SSTATUS_SPP) != 0)
@@ -45,6 +46,7 @@ usertrap(void)
   w_stvec((uint64)kernelvec);
 
   struct proc *p = myproc();
+  printf("Entering usertrap for process %d\n", p->pid); // TODO: comment out
   
   // save user program counter.
   p->trapframe->epc = r_sepc();
@@ -163,7 +165,8 @@ kerneltrap()
   uint64 sepc = r_sepc();
   uint64 sstatus = r_sstatus();
   uint64 scause = r_scause();
-  
+  printf("Kernel trap triggered with scause=0x%lx\n", scause); // TODO: comment out
+
   if((sstatus & SSTATUS_SPP) == 0)
     panic("kerneltrap: not from supervisor mode");
   if(intr_get() != 0)
@@ -188,6 +191,8 @@ kerneltrap()
 void
 clockintr()
 {
+  printf("Timer interrupt triggered.\n"); // TODO: comment out
+
   if(cpuid() == 0){
     acquire(&tickslock);
     ticks++;
@@ -234,6 +239,8 @@ devintr()
     return 1;
   } else if(scause == 0x8000000000000005L){
     // timer interrupt.
+    printf("Timer interrupt recognized in devintr.\n"); // TODO: comment out
+
     clockintr();
     return 2;
   } else {
