@@ -428,7 +428,7 @@ found:
     qtable_stride[p - proc].pass = lowest_pass + p->stride;
     // release(&p->lock);
   }
-
+  printf("The pid of the process returning in allocproc() is %d", p->pid);
   //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
   return p;
 }
