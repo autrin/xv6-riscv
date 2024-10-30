@@ -94,7 +94,7 @@ enqueue(int index, uint64 pass) {
     }
     qtable_rr[NPROC + 1].prev = index;
 
-    printf("RR Enqueue: Process %d with state:%d enqueued\n", proc[index].pid, proc[index].state);
+    // printf("RR Enqueue: Process %d with state:%d enqueued\n", proc[index].pid, proc[index].state);
   }
   else if (SCHEDULER == 3) {  // Stride queue
     int tail = qtable_stride[NPROC + 1].prev;
@@ -110,7 +110,7 @@ enqueue(int index, uint64 pass) {
     }
     qtable_stride[NPROC + 1].prev = index;
 
-    printf("Stride Enqueue: Process %d with state:%d enqueued\n", proc[index].pid, proc[index].state);
+    // printf("Stride Enqueue: Process %d with state:%d enqueued\n", proc[index].pid, proc[index].state);
   }
   else {
     printf("Error: Unsupported scheduler type of %d in enqueue().\n", SCHEDULER);
@@ -140,7 +140,7 @@ dequeue(void)
         qtable_rr[index].next = MAX_UINT64;
         qtable_rr[index].prev = MAX_UINT64;
 
-        printf("RR Dequeue: Process %d dequeued\n", proc[index].pid);
+        // printf("RR Dequeue: Process %d dequeued\n", proc[index].pid);
         return index;
       }
       index = qtable_rr[index].next;
@@ -166,7 +166,7 @@ dequeue(void)
         qtable_stride[index].next = MAX_UINT64;
         qtable_stride[index].prev = MAX_UINT64;
 
-        printf("Stride Dequeue: Process %d dequeued\n", proc[index].pid);
+        // printf("Stride Dequeue: Process %d dequeued\n", proc[index].pid);
         return index;
       }
       index = qtable_stride[index].next;
@@ -236,9 +236,9 @@ void scheduler_rr_stride()
       // Set process to RUNNING state
       p->state = RUNNING;
       c->proc = p;
-      printf("Scheduler: Switching to process %d\n", p->pid); // Todo comment this test
+      // printf("Scheduler: Switching to process %d\n", p->pid);
       swtch(&c->context, &p->context); // Context switch into the process
-      printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE\n\n", p->state);
+      // printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE\n\n", p->state);
 
       if (SCHEDULER == 3) {
         qtable_stride[p - proc].pass += p->stride; // Increment pass for stride
@@ -280,7 +280,7 @@ stride(int pid, int stride_value)
             return 0;
         }
     }
-    printf("Process with pid %d not found in stride()\n", pid);
+    printf("Process with pid %d not found in stride()\n", pid); // TODO: comment out
     return -1; // Return -1 if process is not found
 }
 
@@ -369,7 +369,7 @@ allocpid()
 // If there are no free procs, or a memory allocation fails, return 0.
 static struct proc*
 allocproc(void)
-{ //! maybe I need to enqueue here?
+{
   struct proc *p;
 
   for(p = proc; p < &proc[NPROC]; p++) {
@@ -384,7 +384,7 @@ allocproc(void)
 
 found:
   p->pid = allocpid();
-  p->state = USED; //! but this is used, not runnable
+  p->state = USED;
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
@@ -412,19 +412,18 @@ found:
     uint64 lowest_pass = find_lowest_pass();  // Find the lowest pass value to maintain queue order
     p->tickets = default_ticket_count;        // Initialize tickets
     p->stride = !p->stride ? (large_constant / p->tickets) : p->stride;  // Calculate stride if unset
-    printf("The stride of processes with pid %d is: %d in allocproc()\n",p->pid, p->stride);
+    // printf("The stride of processes with pid %d is: %d in allocproc()\n",p->pid, p->stride);
     qtable_stride[p - proc].pass = lowest_pass + p->stride;
     // release(&p->lock);
   }
-  printf("The pid of the process returning in allocproc() is %d\n", p->pid);
-  printf("Printing the proc[]\n");
+  // printf("The pid of the process returning in allocproc() is %d\n", p->pid);
+  // printf("Printing the proc[]\n");
   for (int i = 0; i < NPROC; i++) {
-    if(proc[i].state == RUNNABLE){
-      printf("Index %d: pid=%d\n", 
-              i, proc[i].pid);
+    if(proc[i].state == RUNNABLE){ // Testing
+      // printf("Index %d: pid=%d\n", 
+      //         i, proc[i].pid);
     }
   }
-  //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
   return p;
 }
 
@@ -521,7 +520,7 @@ userinit(void)
 
   p = allocproc();
   initproc = p;
-  printf("Returned from allocproc to userinit()\n");
+  // printf("Returned from allocproc to userinit()\n");
   
   // allocate one user page and copy initcode's instructions
   // and data into it.
@@ -538,7 +537,7 @@ userinit(void)
   p->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
     enqueue(p-proc, (SCHEDULER == 3) ? qtable_stride[p-proc].pass : 0); // Use pass only for stride scheduler
-    printf("Enqueued init process (pid=%d) in userinit\n", p->pid);
+    // printf("Enqueued init process (pid=%d) in userinit\n", p->pid);
   }
   release(&p->lock);
 }
@@ -611,7 +610,7 @@ fork(void)
   np->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
     enqueue(np-proc, (SCHEDULER == 3) ? qtable_stride[np-proc].pass : 0);
-    printf("Enqueued child process (pid=%d) from parent (pid=%d)\n", np->pid, p->pid);
+    // printf("Enqueued child process (pid=%d) from parent (pid=%d)\n", np->pid, p->pid);
   }
   release(&np->lock);
 
@@ -762,7 +761,7 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
-        printf("Switching to process %d\n", p->pid); // Todo comment this test
+        // printf("Switching to process %d\n", p->pid);
         swtch(&c->context, &p->context);
 
         // Process is done running for now.
