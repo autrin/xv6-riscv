@@ -201,20 +201,20 @@ test_enqueue(void){
       printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
               i, qtable_rr[i].pass, qtable_rr[i].prev, qtable_rr[i].next);
     }
+    printf("Printing the proc[]\n");
     for (int i = 0; i < NPROC; i++) {
-      printf("Printing the proc[]\n");
-      printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
+      printf("Index %d: pid=%d\n", 
               i, proc[i].pid);
     }
   }
   else if(SCHEDULER == 3){
     printf("Stride Queue state after enqueue:\n");
     for (int i = 0; i < NPROC + 2; i++) {
-      printf("Index %d: pid=%d\n", 
+      printf("Index %d: pass=%lu, prev=%lu, next=%lu\n", 
               i, qtable_stride[i].pass, qtable_stride[i].prev, qtable_stride[i].next);
     }
+    printf("Printing the proc[]\n");
     for (int i = 0; i < NPROC; i++) {
-      printf("Printing the proc[]\n");
       printf("Index %d: pid=%d\n", 
               i, proc[i].pid);
     }
