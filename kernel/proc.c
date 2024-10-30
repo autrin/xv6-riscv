@@ -229,9 +229,10 @@ void scheduler_rr_stride()
       // If the process is still runnable, re-enqueue it
       if (SCHEDULER == 2 || SCHEDULER == 3)
       {
-        p->state = RUNNABLE;
+        // p->state = RUNNABLE;
+        printf("Switching to process %d\n", p->pid); // Todo comment this test
         swtch(&c->context, &p->context); // Context switch into the process
-        enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
+        // enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
       }
     }
     // }
