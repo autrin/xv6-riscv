@@ -255,7 +255,7 @@ void scheduler_rr_stride()
       c->proc = p;
       printf("Scheduler: Switching to process %d\n", p->pid); // Todo comment this test
       swtch(&c->context, &p->context); // Context switch into the process
-      printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE\n", p->state);
+      printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE\n\n", p->state);
 
       if (SCHEDULER == 3) {
         qtable_stride[p - proc].pass += p->stride; // Increment pass for stride
