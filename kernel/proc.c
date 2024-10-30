@@ -219,7 +219,7 @@ void scheduler_rr_stride()
       // Set process to RUNNING state
       p->state = RUNNING;
       c->proc = p;
-      // printf("Switching to process %d\n", p->pid); // Todo comment this test
+      printf("Scheduler: Switching to process %d\n", p->pid); // Todo comment this test
       swtch(&c->context, &p->context); // Context switch into the process
 
       if (SCHEDULER == 3) {
