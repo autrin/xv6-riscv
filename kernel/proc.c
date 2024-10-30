@@ -96,7 +96,7 @@ enqueue(int pid, uint64 pass)
       qtable_rr[NPROC].next = pid;
     }
 
-    printf("RR Enqueue: Process %d enqueued\n", pid);
+    printf("RR Enqueue: Process %d with state:%d enqueued\n", pid, proc[pid]);
     test_enqueue();
     // exit(0);
   }
@@ -327,6 +327,7 @@ procinit(void)
       p->kstack = KSTACK((int) (p - proc));
       p->runtime = 0; // initialize runtime to 0
       p->ticks_used = 0;
+      printf("The process with pid %d is at index %d in proc[]\n", p->pid, p-proc);
   }
 }
 
