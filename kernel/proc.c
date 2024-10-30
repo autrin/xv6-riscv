@@ -74,7 +74,7 @@ init_queue(void)
 
 // Enqueue a process in qtable
 void 
-enqueue(int pid, uint64 pass)
+enqueue(int index, uint64 pass)
 {
   // pid = pid-1;
   if (SCHEDULER == 2)  // Round-robin queue
@@ -82,22 +82,22 @@ enqueue(int pid, uint64 pass)
     int tail = qtable_rr[NPROC + 1].prev; // Get the current tail process ID
 
     // Insert the new process at the end of the queue
-    qtable_rr[pid].next = NPROC + 1;  // Point new process to tail marker (index 65)
-    qtable_rr[pid].prev = tail;       // Point new process back to the old tail
-    qtable_rr[pid].pass = pass;       // Assign the pass value for round-robin
+    qtable_rr[index].next = NPROC + 1;  // Point new process to tail marker (index 65)
+    qtable_rr[index].prev = tail;       // Point new process back to the old tail
+    qtable_rr[index].pass = pass;       // Assign the pass value for round-robin
 
     // Update the old tail's next to point to the new tail
-    qtable_rr[tail].next = pid;
+    qtable_rr[tail].next = index;
 
     // Update the tail marker's prev to point to the new process
-    qtable_rr[NPROC + 1].prev = pid;
+    qtable_rr[NPROC + 1].prev = index;
 
     // If this is the first process in the queue, set the head pointer correctly
     if (qtable_rr[NPROC].next == NPROC + 1) {
-      qtable_rr[NPROC].next = pid;
+      qtable_rr[NPROC].next = index;
     }
 
-    printf("RR Enqueue: Process %d with state:%d enqueued\n", pid, proc[pid].state);
+    printf("RR Enqueue: Process %d with state:%d enqueued\n", index, proc[index].state);
     test_enqueue();
     // exit(0);
   }
@@ -106,21 +106,21 @@ enqueue(int pid, uint64 pass)
     int tail = qtable_stride[NPROC + 1].prev; // Get the current tail process ID
 
     // Insert the new process at the end of the queue
-    qtable_stride[pid].next = NPROC + 1;  // Point new process to tail marker (index 65)
-    qtable_stride[pid].prev = tail;       // Point new process back to the old tail
-    qtable_stride[pid].pass = pass;       // Assign the pass value for round-robin
+    qtable_stride[index].next = NPROC + 1;  // Point new process to tail marker (index 65)
+    qtable_stride[index].prev = tail;       // Point new process back to the old tail
+    qtable_stride[index].pass = pass;       // Assign the pass value for round-robin
 
     // Update the old tail's next to point to the new tail
-    qtable_stride[tail].next = pid;
+    qtable_stride[tail].next = index;
 
     // Update the tail marker's prev to point to the new process
-    qtable_stride[NPROC + 1].prev = pid;
+    qtable_stride[NPROC + 1].prev = index;
 
     // If this is the first process in the queue, set the head pointer correctly
     if (qtable_stride[NPROC].next == NPROC + 1) {
-      qtable_stride[NPROC].next = pid;
+      qtable_stride[NPROC].next = index;
     }
-    printf("Stride Enqueue: Process %d with pass %lu enqueued\n", pid, pass);
+    printf("Stride Enqueue: Process %d with pass %lu enqueued\n", index, pass);
     test_enqueue();
   }
   else {  // Error handling for unsupported scheduler types
@@ -134,16 +134,16 @@ int dequeue(void)
 {
   if (SCHEDULER == 2)
   {                                  // Round-Robin queue
-    int pid = qtable_rr[NPROC].next; // Get the entry after the head
+    int index = qtable_rr[NPROC].next; // Get the entry after the head
     
-    while (pid != NPROC + 1) { // Ensure we aren’t at the tail
-      if (proc[pid].state == RUNNABLE)
+    while (index != NPROC + 1) { // Ensure we aren’t at the tail
+      if (proc[index].state == RUNNABLE)
       {
         // Update the queue pointers
-        qtable_rr[NPROC].next = qtable_rr[pid].next;
-        if (qtable_rr[pid].next != NPROC + 1)
+        qtable_rr[NPROC].next = qtable_rr[index].next;
+        if (qtable_rr[index].next != NPROC + 1)
         { // Not the last item
-          qtable_rr[qtable_rr[pid].next].prev = NPROC;
+          qtable_rr[qtable_rr[index].next].prev = NPROC;
         }
         else {
           // Update the tail pointer if we're removing the last process
@@ -151,28 +151,28 @@ int dequeue(void)
         }
 
         // Clear the dequeued process entry
-        qtable_rr[pid].next = MAX_UINT64;
-        qtable_rr[pid].prev = MAX_UINT64;
-        printf("RR Dequeue: Process %d dequeued\n", pid);
-        return pid;
+        qtable_rr[index].next = MAX_UINT64;
+        qtable_rr[index].prev = MAX_UINT64;
+        printf("RR Dequeue: Process %d dequeued\n", index);
+        return index;
       }
-      pid = qtable_rr[pid].next; // Move to the next entry
+      index = qtable_rr[index].next; // Move to the next entry
     }
     return -1; // Queue is empty or no RUNNABLE process found
   }
   else if (SCHEDULER == 3)
   {                                  // Stride queue
-    int pid = qtable_rr[NPROC].next; // Get the entry after the head
+    int index = qtable_rr[NPROC].next; // Get the entry after the head
     
-    while (pid != NPROC + 1)
+    while (index != NPROC + 1)
     { // Ensure we aren’t at the tail
-      if (proc[pid].state == RUNNABLE)
+      if (proc[index].state == RUNNABLE)
       {
         // Update the queue pointers
-        qtable_stride[NPROC].next = qtable_stride[pid].next;
-        if (qtable_stride[pid].next != NPROC + 1)
+        qtable_stride[NPROC].next = qtable_stride[index].next;
+        if (qtable_stride[index].next != NPROC + 1)
         { // Not the last item
-          qtable_stride[qtable_stride[pid].next].prev = NPROC;
+          qtable_stride[qtable_stride[index].next].prev = NPROC;
         }
         else {
           // Update the tail pointer if we're removing the last process
@@ -180,13 +180,13 @@ int dequeue(void)
         }
 
         // Clear the dequeued process entry
-        qtable_stride[pid].next = MAX_UINT64;
-        qtable_stride[pid].prev = MAX_UINT64;
-        qtable_stride[pid].pass = MAX_UINT64;
-        printf("Stride Dequeue: Process %d dequeued\n", pid);
-        return pid;
+        qtable_stride[index].next = MAX_UINT64;
+        qtable_stride[index].prev = MAX_UINT64;
+        qtable_stride[index].pass = MAX_UINT64;
+        printf("Stride Dequeue: Process %d dequeued\n", index);
+        return index;
       }
-      pid = qtable_stride[pid].next; // Move to the next entry
+      index = qtable_stride[index].next; // Move to the next entry
     }
     return -1;
   }
