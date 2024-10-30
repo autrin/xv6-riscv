@@ -118,4 +118,10 @@ struct proc {
   int tickets;                 // NUmber of tickets for stride scheduler
 };
 
+// A fixed size table where the index of a process in proc[] is the same in qtable_stride[]
+// Index of head is stored at 64 and tail at 65
+extern struct qentry qtable_stride[NPROC+2];
+
+extern struct qentry qtable_rr[NPROC+2];
+
 #endif
