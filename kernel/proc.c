@@ -97,7 +97,7 @@ enqueue(int index, uint64 pass)
       qtable_rr[NPROC].next = index;
     }
 
-    printf("RR Enqueue: Process %d with state:%d enqueued\n", index, proc[index].state);
+    printf("RR Enqueue: Process %d with state:%d enqueued\n", proc[index].pid, proc[index].state);
     test_enqueue();
     // exit(0);
   }
@@ -120,7 +120,7 @@ enqueue(int index, uint64 pass)
     if (qtable_stride[NPROC].next == NPROC + 1) {
       qtable_stride[NPROC].next = index;
     }
-    printf("Stride Enqueue: Process %d with pass %lu enqueued\n", index, pass);
+    printf("Stride Enqueue: Process %d with pass %lu enqueued\n", proc[index].pid, pass);
     test_enqueue();
   }
   else {  // Error handling for unsupported scheduler types
@@ -153,7 +153,7 @@ int dequeue(void)
         // Clear the dequeued process entry
         qtable_rr[index].next = MAX_UINT64;
         qtable_rr[index].prev = MAX_UINT64;
-        printf("RR Dequeue: Process %d dequeued\n", index);
+        printf("RR Dequeue: Process %d dequeued\n", proc[index].pid);
         return index;
       }
       index = qtable_rr[index].next; // Move to the next entry
@@ -183,7 +183,7 @@ int dequeue(void)
         qtable_stride[index].next = MAX_UINT64;
         qtable_stride[index].prev = MAX_UINT64;
         qtable_stride[index].pass = MAX_UINT64;
-        printf("Stride Dequeue: Process %d dequeued\n", index);
+        printf("Stride Dequeue: Process %d dequeued\n", proc[index].pid);
         return index;
       }
       index = qtable_stride[index].next; // Move to the next entry
@@ -204,8 +204,10 @@ test_enqueue(void){
     }
     printf("Printing the proc[]\n");
     for (int i = 0; i < NPROC; i++) {
-      printf("Index %d: pid=%d\n", 
-              i, proc[i].pid);
+      if(proc[i].state == RUNNABLE){
+        printf("Index %d: pid=%d\n", 
+                i, proc[i].pid);
+      }
     }
   }
   else if(SCHEDULER == 3){
@@ -216,8 +218,10 @@ test_enqueue(void){
     }
     printf("Printing the proc[]\n");
     for (int i = 0; i < NPROC; i++) {
-      printf("Index %d: pid=%d\n", 
-              i, proc[i].pid);
+      if(proc[i].state == RUNNABLE){
+        printf("Index %d: pid=%d\n", 
+                i, proc[i].pid);
+      }
     }
   }
 }
@@ -243,7 +247,6 @@ void scheduler_rr_stride()
     }
 
     p = &proc[dequeued];
-    printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE\n", p->state);
     acquire(&p->lock);
 
     if (p->state == RUNNABLE) {
@@ -252,6 +255,7 @@ void scheduler_rr_stride()
       c->proc = p;
       printf("Scheduler: Switching to process %d\n", p->pid); // Todo comment this test
       swtch(&c->context, &p->context); // Context switch into the process
+      printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE\n", p->state);
 
       if (SCHEDULER == 3) {
         qtable_stride[p - proc].pass += p->stride; // Increment pass for stride
@@ -432,8 +436,10 @@ found:
   printf("The pid of the process returning in allocproc() is %d\n", p->pid);
   printf("Printing the proc[]\n");
   for (int i = 0; i < NPROC; i++) {
-    printf("Index %d: pid=%d\n", 
-            i, proc[i].pid);
+    if(proc[i].state == RUNNABLE){
+      printf("Index %d: pid=%d\n", 
+              i, proc[i].pid);
+    }
   }
   //! We are not initalizing the pass value for other schedulers, if encountered errors, set it to 0 here.
   return p;
@@ -548,8 +554,7 @@ userinit(void)
 
   p->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
-    uint64 pindex = p - proc;
-    enqueue(p-proc, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+    enqueue(p-proc, (SCHEDULER == 3) ? qtable_stride[p-proc].pass : 0); // Use pass only for stride scheduler
     printf("Enqueued init process (pid=%d) in userinit\n", p->pid);
   }
   release(&p->lock);
@@ -622,7 +627,7 @@ fork(void)
   acquire(&np->lock);
   np->state = RUNNABLE;
   if(SCHEDULER == 2 || SCHEDULER == 3){
-    enqueue(np-proc, (SCHEDULER == 3) ? qtable_stride[np - proc].pass : 0);
+    enqueue(np-proc, (SCHEDULER == 3) ? qtable_stride[np-proc].pass : 0);
     printf("Enqueued child process (pid=%d) from parent (pid=%d)\n", np->pid, p->pid);
   }
   release(&np->lock);
@@ -830,8 +835,7 @@ yield(void)
     p->ticks_used = 0; // Reset ticks before re-enqueuing the process
   if(SCHEDULER == 2 || SCHEDULER == 3){
     // Add the process back to the queue based on the current scheduler
-    uint64 pindex = p - proc;
-    enqueue(p-proc, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+    enqueue(p-proc, (SCHEDULER == 3) ? qtable_stride[p-proc].pass : 0); // Use pass only for stride scheduler
   }
   sched(); // Call the scheduler to pick the next process
   release(&p->lock);
@@ -905,8 +909,7 @@ wakeup(void *chan)
       if(p->state == SLEEPING && p->chan == chan) {
         p->state = RUNNABLE;
         if(SCHEDULER == 2 || SCHEDULER == 3){
-          uint64 pindex = p - proc;
-          enqueue(p-proc, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+          enqueue(p-proc, (SCHEDULER == 3) ? qtable_stride[p-proc].pass : 0); // Use pass only for stride scheduler
         }
       }
       release(&p->lock);
