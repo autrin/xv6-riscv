@@ -46,7 +46,7 @@ struct spinlock wait_lock;
 void test_enqueue(void);
 // initialize all the entries of the qtable
 void 
-init_queue()
+init_queue(void)
 {
   // qtabe_stride initializtion
   for(int i = 0; i < NPROC; i++){
@@ -129,7 +129,7 @@ enqueue(int pid, uint64 pass)
 
 // Dequeue a process from qtable
 int 
-dequeue() {
+dequeue(void) {
   if (SCHEDULER == 3) {  // Stride queue
     int pid = qtable_stride[NPROC].next;  // get the entry that's right after the head
     if (pid == NPROC + 1) {  // Queue is empty
