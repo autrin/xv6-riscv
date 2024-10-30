@@ -780,6 +780,8 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
+  if(SCHEDULER == 2) // For Round Robin scheduler
+    p->ticks_used = 0; // Reset ticks before re-enqueuing the process
   if(SCHEDULER == 2 || SCHEDULER == 3){
     // Add the process back to the queue based on the current scheduler
     uint64 pindex = p - proc;
@@ -787,8 +789,6 @@ yield(void)
   }
   sched(); // Call the scheduler to pick the next process
   release(&p->lock);
-  if(SCHEDULER == 2)
-    p->ticks_used = 0;
 }
 
 // A fork child's very first scheduling by scheduler()
