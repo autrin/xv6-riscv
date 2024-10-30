@@ -230,6 +230,9 @@ void scheduler_rr_stride()
         enqueue(p->pid, 0);  // Re-enqueue if still runnable
       }
     }
+    else {
+      printf("Warning: Process %d dequeued but not RUNNABLE.\n", p->pid);
+    }
     c->proc = 0; // Reset the CPU's proc
     release(&p->lock);
   }
