@@ -506,6 +506,7 @@ userinit(void)
   if(SCHEDULER == 2 || SCHEDULER == 3){
     uint64 pindex = p - proc;
     enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[pindex].pass : 0); // Use pass only for stride scheduler
+    printf("Enqueued init process (pid=%d) in userinit\n", p->pid);
   }
   release(&p->lock);
 }
