@@ -96,20 +96,29 @@ enqueue(int index, uint64 pass) {
 
     // printf("RR Enqueue: Process %d with state:%d enqueued\n", proc[index].pid, proc[index].state);
   }
-  else if (SCHEDULER == 3) {  // Stride queue
-    int tail = qtable_stride[NPROC + 1].prev;
+  else if (SCHEDULER == 3) {  // Stride queue with sorted insertion based on pass value
+    qtable_stride[index].pass = pass;  // Assign the pass value
 
-    qtable_stride[index].next = NPROC + 1;
-    qtable_stride[index].prev = tail;
-    qtable_stride[index].pass = pass;
+    int current = NPROC;  // Start at the head of the queue
+    int next = qtable_stride[NPROC].next;
 
-    if (tail != NPROC + 1) {
-      qtable_stride[tail].next = index;
-    } else {
-      qtable_stride[NPROC].next = index;
+    // Traverse the queue to find the insertion point for the new process
+    while (next != NPROC + 1 && qtable_stride[next].pass <= pass) {
+      current = next;
+      next = qtable_stride[next].next;
     }
-    qtable_stride[NPROC + 1].prev = index;
 
+    // Insert the new process between 'current' and 'next'
+    qtable_stride[index].next = next;
+    qtable_stride[index].prev = current;
+    qtable_stride[current].next = index;
+
+    if (next != NPROC + 1) {
+      qtable_stride[next].prev = index;
+    } else {
+      // If it's the last entry, update the tail pointer
+      qtable_stride[NPROC + 1].prev = index;
+    }
     // printf("Stride Enqueue: Process %d with state:%d enqueued\n", proc[index].pid, proc[index].state);
   }
   else {
