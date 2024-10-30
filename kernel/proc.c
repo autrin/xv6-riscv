@@ -145,8 +145,6 @@ dequeue(void) {
     qtable_stride[pid].pass = MAX_UINT64;
     qtable_stride[pid].next = MAX_UINT64;
     qtable_stride[pid].prev = MAX_UINT64;
-    test_enqueue();
-    exit(0);
     return pid;  // Return the dequeued process id
   }
   else if (SCHEDULER == 2) {  // Round-Robin queue
@@ -217,11 +215,15 @@ void scheduler_rr_stride()
       // Set process to RUNNING state
       p->state = RUNNING;
       c->proc = p;
+      // printf("Switching to process %d\n", p->pid); // Todo comment this test
       swtch(&c->context, &p->context); // Context switch into the process
 
       if (SCHEDULER == 3) {
         qtable_stride[p - proc].pass += p->stride; // Increment pass for stride
-        // printf("Switching to process %d\n", p->pid); // Todo comment this test
+      }
+      if(SCHEDULER == 2){
+        if(p->state == RUNNABLE) // used its time slice but if still runnable enqueue it
+          enqueue(p->pid, 0);
       }
     }
     c->proc = 0; // Reset the CPU's proc
