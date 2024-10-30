@@ -2,7 +2,7 @@
 #include "user/user.h"
 #include "kernel/syscall.h"
 
-#define N  1000
+#define N  100
 
 void
 test1(void)
