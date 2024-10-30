@@ -332,7 +332,7 @@ procinit(void)
       p->kstack = KSTACK((int) (p - proc));
       p->runtime = 0; // initialize runtime to 0
       p->ticks_used = 0;
-      printf("The process with pid %d is at index %lu in proc[]\n", p->pid, p - proc);
+      // printf("The process with pid %d is at index %lu in proc[]\n", p->pid, p - proc);
   }
 }
 
