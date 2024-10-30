@@ -42,7 +42,7 @@ extern char trampoline[]; // trampoline.S
 // memory model when using p->parent.
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
-void test_enqueue(void);
+
 // initialize all the entries of the qtable
 void 
 init_queue(void)

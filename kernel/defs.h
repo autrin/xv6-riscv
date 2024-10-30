@@ -111,6 +111,7 @@ uint64          stride(int pid, int stride_value); // Sets the stride value for 
 void            init_queue(void); // Initializes the scheduling queue
 void            enqueue(int pid, uint64 pass); // Enqueues a process into the scheduling queue
 int             dequeue(void); // Dequeues a process from the scheduling queue
+void            test_enqueue(void); // A test method printing the qtable and proc.
 
 // swtch.S
 void            swtch(struct context*, struct context*);
