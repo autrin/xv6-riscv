@@ -80,53 +80,46 @@ enqueue(int pid, uint64 pass)
   //!  make sure SCHEDULER is a runtime variable, not just a compile-time macro.
   if (SCHEDULER == 2)  // Round-robin queue
   {
-    int current = qtable_rr[NPROC].next; // Start at the head
-    int previous = NPROC;                // Track the previous index
+    int tail = qtable_rr[NPROC + 1].prev; // Get the current tail process ID
 
-    // Insert the new entry between previous and current
-    qtable_rr[pid].next = current;
-    qtable_rr[pid].prev = previous;
-    qtable_rr[pid].pass = 0;
+    // Insert the new process at the end of the queue
+    qtable_rr[pid].next = NPROC + 1;  // Point new process to tail marker (index 65)
+    qtable_rr[pid].prev = tail;       // Point new process back to the old tail
+    qtable_rr[pid].pass = pass;       // Assign the pass value for round-robin
 
-    // Set the previous and next pointers for the surrounding elements
-    qtable_rr[previous].next = pid; // head's next
-    if (current != NPROC + 1)       // If not at the tail
-    {
-      qtable_rr[current].prev = pid; // Update current's previous pointer
+    // Update the old tail's next to point to the new tail
+    qtable_rr[tail].next = pid;
+
+    // Update the tail marker's prev to point to the new process
+    qtable_rr[NPROC + 1].prev = pid;
+
+    // If this is the first process in the queue, set the head pointer correctly
+    if (qtable_rr[NPROC].next == NPROC + 1) {
+      qtable_rr[NPROC].next = pid;
     }
-    else {
-      // Update the tail pointer to the newly enqueued process if it is last
-      qtable_rr[NPROC + 1].prev = pid;
-    }
+
     printf("RR Enqueue: Process %d enqueued\n", pid);
     test_enqueue();
     // exit(0);
   }
   else if (SCHEDULER == 3)  // Stride queue
   {
-    int current = qtable_stride[NPROC].next; // Start at the head
-    int previous = NPROC;                    // Track the previous index
+    int tail = qtable_stride[NPROC + 1].prev; // Get the current tail process ID
 
-    // Traverse the queue to find the correct spot based on pass value
-    while (current != NPROC + 1 && qtable_stride[current].pass < pass)
-    {
-      previous = current;
-      current = qtable_stride[current].next;
-    }
+    // Insert the new process at the end of the queue
+    qtable_stride[pid].next = NPROC + 1;  // Point new process to tail marker (index 65)
+    qtable_stride[pid].prev = tail;       // Point new process back to the old tail
+    qtable_stride[pid].pass = pass;       // Assign the pass value for round-robin
 
-    // Insert the process into the queue at the correct location
-    qtable_stride[pid].pass = pass;
-    qtable_stride[pid].prev = previous;
-    qtable_stride[pid].next = current;
+    // Update the old tail's next to point to the new tail
+    qtable_stride[tail].next = pid;
 
-    qtable_stride[previous].next = pid; // Connect the previous to new process
-    if (current != NPROC + 1)           // If not at the tail
-    {
-      qtable_stride[current].prev = pid; // Connect the next process back to new process
-    }
-    else {
-      // Update the tail pointer to the newly enqueued process if it is last
-      qtable_stride[NPROC + 1].prev = pid;
+    // Update the tail marker's prev to point to the new process
+    qtable_stride[NPROC + 1].prev = pid;
+
+    // If this is the first process in the queue, set the head pointer correctly
+    if (qtable_stride[NPROC].next == NPROC + 1) {
+      qtable_stride[NPROC].next = pid;
     }
     printf("Stride Enqueue: Process %d with pass %lu enqueued\n", pid, pass);
     test_enqueue();
