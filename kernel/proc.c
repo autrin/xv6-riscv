@@ -482,13 +482,13 @@ uchar initcode[] = {
 void
 userinit(void)
 {
-  printf("Creating init process\n"); //!
+  printf("Creating init process\n");
 
   struct proc *p;
 
   p = allocproc();
   initproc = p;
-  printf("passed line 472\n");
+  printf("Returned from allocproc to userinit()\n");
   
   // allocate one user page and copy initcode's instructions
   // and data into it.
