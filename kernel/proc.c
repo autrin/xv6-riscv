@@ -86,6 +86,7 @@ enqueue(int pid, uint64 pass)
     // Insert the new entry between previous and current
     qtable_rr[pid].next = current;
     qtable_rr[pid].prev = previous;
+    qtable_rr[pid].pass = 0;
 
     // Set the previous and next pointers for the surrounding elements
     qtable_rr[previous].next = pid; // head's next
