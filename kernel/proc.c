@@ -147,6 +147,7 @@ dequeue(void) {
     qtable_stride[pid].pass = MAX_UINT64;
     qtable_stride[pid].next = MAX_UINT64;
     qtable_stride[pid].prev = MAX_UINT64;
+    printf("Stride Dequeue: Process %d dequeued\n", pid);
     return pid;  // Return the dequeued process id
   }
   else if (SCHEDULER == 2) {  // Round-Robin queue
@@ -164,6 +165,7 @@ dequeue(void) {
     // Reset the dequeued process entry
     qtable_rr[pid].next = MAX_UINT64;
     qtable_rr[pid].prev = MAX_UINT64;
+    printf("RR Dequeue: Process %d dequeued\n", pid);
     return pid;  // Return the dequeued process id
   }
   else {  // Error handling for unsupported scheduler types
