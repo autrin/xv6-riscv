@@ -106,6 +106,11 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
+void            scheduler_rr_stride(); // Implements a round-robin scheduler
+uint64          stride(int pid, int stride_value); // Sets the stride value for the given process
+void            init_queue(); // Initializes the scheduling queue
+void            enqueue(int pid, uint64 pass); // Enqueues a process into the scheduling queue
+int             dequeue(); // Dequeues a process from the scheduling queue
 
 // swtch.S
 void            swtch(struct context*, struct context*);
