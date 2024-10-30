@@ -74,6 +74,12 @@ init_queue(void)
 // Enqueue a process in qtable
 void 
 enqueue(int index, uint64 pass) {
+  // Check if the process state is RUNNABLE before enqueueing
+  if (proc[index].state != RUNNABLE) {
+    printf("Enqueue Error: Process %d is not RUNNABLE, state:%d\n", proc[index].pid, proc[index].state);
+    return;  // Exit function if process is not RUNNABLE
+  }
+
   if (SCHEDULER == 2) {  // Round-robin queue
     int tail = qtable_rr[NPROC + 1].prev;
 
