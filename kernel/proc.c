@@ -93,6 +93,7 @@ enqueue(int pid, uint64 pass)
     {
       qtable_rr[current].prev = pid; // Update current's previous pointer
     }
+    printf("RR Enqueue: Process %d enqueued\n", pid);
     test_enqueue();
     // exit(0);
   }
@@ -118,6 +119,7 @@ enqueue(int pid, uint64 pass)
     {
       qtable_stride[current].prev = pid; // Connect the next process back to new process
     }
+    printf("Stride Enqueue: Process %d with pass %lu enqueued\n", pid, pass);
     test_enqueue();
   }
   else {  // Error handling for unsupported scheduler types
