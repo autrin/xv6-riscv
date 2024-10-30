@@ -129,49 +129,59 @@ enqueue(int pid, uint64 pass)
 }
 
 // Dequeue a process from qtable
-int 
-dequeue(void) {
-  if (SCHEDULER == 3) {  // Stride queue
-    int pid = qtable_stride[NPROC].next;  // get the entry that's right after the head
-    if (pid == NPROC + 1) {  // Queue is empty
-      return -1;  // Indicate that the queue is empty
-    }
-    
-    // Update the head pointer
-    qtable_stride[NPROC].next = qtable_stride[pid].next;  // head now points to the next entry
-    if (qtable_stride[pid].next != NPROC + 1) {  // if the next entry is not the tail
-      qtable_stride[qtable_stride[pid].next].prev = NPROC;  // make the next entry's prev point to the head
-    }
+int dequeue(void)
+{
+  if (SCHEDULER == 2)
+  {                                  // Round-Robin queue
+    int pid = qtable_rr[NPROC].next; // Get the entry after the head
+    while (pid != NPROC + 1)
+    { // Ensure we aren’t at the tail
+      if (proc[pid].state == RUNNABLE)
+      {
+        // Update the queue pointers
+        qtable_rr[NPROC].next = qtable_rr[pid].next;
+        if (qtable_rr[pid].next != NPROC + 1)
+        { // Not the last item
+          qtable_rr[qtable_rr[pid].next].prev = NPROC;
+        }
 
-    // Reset the dequeued process entry
-    qtable_stride[pid].pass = MAX_UINT64;
-    qtable_stride[pid].next = MAX_UINT64;
-    qtable_stride[pid].prev = MAX_UINT64;
-    printf("Stride Dequeue: Process %d dequeued\n", pid);
-    return pid;  // Return the dequeued process id
+        // Clear the dequeued process entry
+        qtable_rr[pid].next = MAX_UINT64;
+        qtable_rr[pid].prev = MAX_UINT64;
+        printf("RR Dequeue: Process %d dequeued\n", pid);
+        return pid;
+      }
+      pid = qtable_rr[pid].next; // Move to the next entry
+    }
+    return -1; // Queue is empty or no RUNNABLE process found
   }
-  else if (SCHEDULER == 2) {  // Round-Robin queue
-    int pid = qtable_rr[NPROC].next;  // get the entry that's right after the head
-    if (pid == NPROC + 1) {  // Queue is empty
-      return -1;  // Indicate that the queue is empty
-    }
-    
-    // Update the head pointer
-    qtable_rr[NPROC].next = qtable_rr[pid].next;  // head now points to the next entry
-    if (qtable_rr[pid].next != NPROC + 1) {  // if the next entry is not the tail
-      qtable_rr[qtable_rr[pid].next].prev = NPROC;  // make the next entry's prev point to the head
-    }
+  else if (SCHEDULER == 3)
+  {                                  // Stride queue
+    int pid = qtable_rr[NPROC].next; // Get the entry after the head
+    while (pid != NPROC + 1)
+    { // Ensure we aren’t at the tail
+      if (proc[pid].state == RUNNABLE)
+      {
+        // Update the queue pointers
+        qtable_stride[NPROC].next = qtable_stride[pid].next;
+        if (qtable_stride[pid].next != NPROC + 1)
+        { // Not the last item
+          qtable_stride[qtable_stride[pid].next].prev = NPROC;
+        }
 
-    // Reset the dequeued process entry
-    qtable_rr[pid].next = MAX_UINT64;
-    qtable_rr[pid].prev = MAX_UINT64;
-    printf("RR Dequeue: Process %d dequeued\n", pid);
-    return pid;  // Return the dequeued process id
+        // Clear the dequeued process entry
+        qtable_stride[pid].next = MAX_UINT64;
+        qtable_stride[pid].prev = MAX_UINT64;
+        qtable_stride[pid].pass = MAX_UINT64;
+        printf("Stride Dequeue: Process %d dequeued\n", pid);
+        return pid;
+      }
+      pid = qtable_stride[pid].next; // Move to the next entry
+    }
+    return -1;
   }
-  else {  // Error handling for unsupported scheduler types
-    printf("Error: Unsupported scheduler type of %d in dequeue().\n", SCHEDULER);
-    return -1;  // Return error code
-  }
+  printf("Error: Unsupported scheduler type of %d in dequeue().\n", SCHEDULER);
+  return -1;
 }
 
 void 
