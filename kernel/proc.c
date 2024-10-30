@@ -213,6 +213,7 @@ void scheduler_rr_stride()
     }
 
     p = &proc[dequeued];
+    printf("The state of the dequeued process should be Running and it is: %d\n States are UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE", p->state);
     acquire(&p->lock);
 
     if (p->state == RUNNABLE) {
@@ -225,9 +226,8 @@ void scheduler_rr_stride()
       if (SCHEDULER == 3) {
         qtable_stride[p - proc].pass += p->stride; // Increment pass for stride
       }
-      if(SCHEDULER == 2){
-        if(p->state == RUNNABLE) // used its time slice but if still runnable enqueue it
-          enqueue(p->pid, 0);
+      if(SCHEDULER == 2 && p->state == RUNNABLE) {
+        enqueue(p->pid, 0);  // Re-enqueue if still runnable
       }
     }
     c->proc = 0; // Reset the CPU's proc
