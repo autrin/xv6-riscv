@@ -94,6 +94,10 @@ enqueue(int pid, uint64 pass)
     {
       qtable_rr[current].prev = pid; // Update current's previous pointer
     }
+    else {
+      // Update the tail pointer to the newly enqueued process if it is last
+      qtable_rr[NPROC + 1].prev = pid;
+    }
     printf("RR Enqueue: Process %d enqueued\n", pid);
     test_enqueue();
     // exit(0);
@@ -120,6 +124,10 @@ enqueue(int pid, uint64 pass)
     {
       qtable_stride[current].prev = pid; // Connect the next process back to new process
     }
+    else {
+      // Update the tail pointer to the newly enqueued process if it is last
+      qtable_stride[NPROC + 1].prev = pid;
+    }
     printf("Stride Enqueue: Process %d with pass %lu enqueued\n", pid, pass);
     test_enqueue();
   }
@@ -135,8 +143,8 @@ int dequeue(void)
   if (SCHEDULER == 2)
   {                                  // Round-Robin queue
     int pid = qtable_rr[NPROC].next; // Get the entry after the head
-    while (pid != NPROC + 1)
-    { // Ensure we aren’t at the tail
+    
+    while (pid != NPROC + 1) { // Ensure we aren’t at the tail
       if (proc[pid].state == RUNNABLE)
       {
         // Update the queue pointers
@@ -144,6 +152,10 @@ int dequeue(void)
         if (qtable_rr[pid].next != NPROC + 1)
         { // Not the last item
           qtable_rr[qtable_rr[pid].next].prev = NPROC;
+        }
+        else {
+          // Update the tail pointer if we're removing the last process
+          qtable_rr[NPROC + 1].prev = NPROC;
         }
 
         // Clear the dequeued process entry
@@ -159,6 +171,7 @@ int dequeue(void)
   else if (SCHEDULER == 3)
   {                                  // Stride queue
     int pid = qtable_rr[NPROC].next; // Get the entry after the head
+    
     while (pid != NPROC + 1)
     { // Ensure we aren’t at the tail
       if (proc[pid].state == RUNNABLE)
@@ -168,6 +181,10 @@ int dequeue(void)
         if (qtable_stride[pid].next != NPROC + 1)
         { // Not the last item
           qtable_stride[qtable_stride[pid].next].prev = NPROC;
+        }
+        else {
+          // Update the tail pointer if we're removing the last process
+          qtable_rr[NPROC + 1].prev = NPROC;
         }
 
         // Clear the dequeued process entry
