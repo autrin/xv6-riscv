@@ -22,6 +22,11 @@ struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
 
+// A fixed size table where the index of a process in proc[] is the same in qtable_stride[]
+// Index of head is stored at 64 and tail at 65
+struct qentry qtable_stride[NPROC+2];
+struct qentry qtable_rr[NPROC+2];
+
 struct proc *initproc;
 
 int nextpid = 1;
@@ -190,8 +195,8 @@ void scheduler_rr_stride()
 {
   struct proc *p;
   struct cpu *c = mycpu();
-
   c->proc = 0;
+  
   for (;;)
   {
     intr_on(); // Enable interrupts to avoid deadlocks
@@ -201,41 +206,30 @@ void scheduler_rr_stride()
     {
       // printf("dequeued was -1 in the for loop of scheduler_rr_stride()\n");
       // No process in the queue
+      asm volatile("wfi"); // Wait for interrupt
       continue; // Go back to the start of the loop and wait for an interrupt
     }
 
     p = &proc[dequeued];
     acquire(&p->lock);
 
-    if (p->state == RUNNABLE)
-    {
-      // Initialize time slice tracking
-      p->ticks_used = 0; // Reset the tick counter for this process
-
-      // Set process to RUNNING state and run it for the given quanta
+    if (p->state == RUNNABLE) {
+      // Set process to RUNNING state
       p->state = RUNNING;
       c->proc = p;
+      swtch(&c->context, &p->context); // Context switch into the process
 
-      // swtch(&c->context, &p->context);  // Context switch into the process
-
-      // The process is done running for now
-      // if (p->state == RUNNING) {
-      // If the process is still runnable, re-enqueue it
-      if (SCHEDULER == 2 || SCHEDULER == 3)
-      {
-        // p->state = RUNNABLE;
-        printf("Switching to process %d\n", p->pid); // Todo comment this test
-        swtch(&c->context, &p->context); // Context switch into the process
-        // enqueue(p->pid, (SCHEDULER == 3) ? qtable_stride[p - proc].pass : 0);
+      if (SCHEDULER == 3) {
+        qtable_stride[p - proc].pass += p->stride; // Increment pass for stride
+        // printf("Switching to process %d\n", p->pid); // Todo comment this test
       }
     }
-    // }
-
     c->proc = 0; // Reset the CPU's proc
     release(&p->lock);
   }
 }
 
+// Find the lowest pass for the process. Used for the stride scheduler
 uint64
 find_lowest_pass(void){
   uint64 lowest_pass = MAX_UINT64;
