@@ -76,7 +76,7 @@ init_queue(void)
 void 
 enqueue(int pid, uint64 pass)
 {
-  pid = pid-1;
+  // pid = pid-1;
   if (SCHEDULER == 2)  // Round-robin queue
   {
     int tail = qtable_rr[NPROC + 1].prev; // Get the current tail process ID
