@@ -12,3 +12,6 @@ Files modified:
     Makefile
     usys.pl
     user.h
+
+Screenshot of the runtime with different stride values:
+![alt text](runtime-stride.png)

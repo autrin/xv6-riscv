@@ -63,7 +63,7 @@ usertrap(void)
     // an interrupt will change sepc, scause, and sstatus,
     // so enable only now that we're done with those registers.
     intr_on();
-
+    // printf("this is the first if\n");
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
@@ -73,23 +73,26 @@ usertrap(void)
     setkilled(p);
   }
 
-  if(killed(p))
+  if(killed(p)){
+    // printf("The value of which_dev is %d\n", which_dev);
     exit(-1);
+  }
   // printf("scause: 0x%lx\n\n", r_scause());
   // printf("which_dev: %d\n\n", which_dev);
   // give up the CPU if this is a timer interrupt.
+  // printf("The value of which_dev: %d\n", which_dev);
+  which_dev = 2;
   if(which_dev == 2){
-    printf("Entering which_dev == 2 if in usertrap for process %d\n", p->pid); // TODO: comment out
+    // printf("Entering which_dev == 2 if in usertrap for process %d\n", p->pid); // TODO: comment out
     // if(!p->lock.locked)
-      acquire(&p->lock);
-    // TODO: comment the tests
+    acquire(&p->lock);
     if(p->state == RUNNING){
-      printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
+      // printf("Runtime of pid=%d and stride=%d before increamenting: %d\n", p->pid, p->stride , p->runtime);
       p->runtime++; // increment runtime of the process by 1
-      printf("Runtime of pid=%d and stride=%d after increamenting: %d\n", p->pid, p->stride, p->runtime);
+      // printf("Runtime of pid=%d and stride=%d after increamenting: %d\n", p->pid, p->stride, p->runtime);
     }
     // if(p->lock.locked)
-      release(&p->lock);
+    release(&p->lock);
 
     if(SCHEDULER == 2){ // RR
       if(p && p->state == RUNNING){
@@ -167,7 +170,7 @@ kerneltrap()
   uint64 sepc = r_sepc();
   uint64 sstatus = r_sstatus();
   uint64 scause = r_scause();
-  // printf("Kernel trap triggered with scause=0x%lx\n", scause); // TODO: comment out
+  // printf("Kernel trap triggered with scause=0x%lx\n", scause); 
 
   if((sstatus & SSTATUS_SPP) == 0)
     panic("kerneltrap: not from supervisor mode");
@@ -193,7 +196,7 @@ kerneltrap()
 void
 clockintr()
 {
-  // printf("Timer interrupt triggered.\n"); // TODO: comment out
+  // printf("Timer interrupt triggered.\n");
 
   if(cpuid() == 0){
     acquire(&tickslock);
@@ -241,9 +244,9 @@ devintr()
     return 1;
   } else if(scause == 0x8000000000000005L){
     // timer interrupt.
-    // printf("Timer interrupt recognized in devintr.\n"); // TODO: comment out
 
     clockintr();
+    // printf("Timer interrupt recognized in devintr.\n");
     return 2;
   } else {
     return 0;
