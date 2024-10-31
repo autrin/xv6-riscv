@@ -94,10 +94,10 @@ usertrap(void)
     if(SCHEDULER == 2){ // RR
       if(p && p->state == RUNNING){
         // if(!p->lock.locked)
-          acquire(&p->lock);
+        acquire(&p->lock);
         p->ticks_used++;
         // if(p->lock.locked)
-          release(&p->lock);
+        release(&p->lock);
         if(p->ticks_used >= quanta){
           // Time slice exhausted, preempt the process
           yield();  // Preempt the current process
