@@ -16,9 +16,3 @@ Files modified:
     usys.pl
     user.h
 
-Screenshot of the runtime with different stride values:
-![alt text](runtime-stride.png)
-
-I have a lot of tests using printf() in the files. All of them worked. You are welcome to uncomment them and test if you want. You can search "printf" to see my tests.
-
-I also implemented a test_enqueue(void) that prints the queue table and the proc[]. This was very helpful.
