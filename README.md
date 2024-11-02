@@ -1,3 +1,6 @@
+This project implements a custom scheduling system for the XV6 operating system, featuring both stride scheduling and round-robin (RR) scheduling. I implemented a FIFO queue for the schedulers.
+
+
 Files modified:
     syscall.c
     syscall.h
